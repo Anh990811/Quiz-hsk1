@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Tạo Icon PWA - 学中文</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 30px;
+            background: #1a1a2e;
+            color: white;
+        }
+
+        h1 {
+            color: #8b5cf6;
+        }
+
+        .step {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        canvas {
+            border-radius: 22%;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            margin: 10px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .success {
+            color: #22c55e;
+            font-weight: bold;
+        }
+
+        .note {
+            color: #a0a0b0;
+            font-size: 0.9rem;
+        }
+
+        .preview {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🎨 Tạo Icon PWA cho 学中文</h1>
+
+    <div class="step">
+        <h2>Bước 1: Xem trước icon</h2>
+        <div class="preview">
+            <div>
+                <p>192x192 (icon nhỏ)</p>
+                <canvas id="canvas192" width="192" height="192"></canvas>
+            </div>
+            <div>
+                <p>512x512 (icon lớn)</p>
+                <canvas id="canvas512" width="512" height="512"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="step">
+        <h2>Bước 2: Tải icon xuống</h2>
+        <button onclick="downloadIcon(192)">⬇️ Tải icon-192.png</button>
+        <button onclick="downloadIcon(512)">⬇️ Tải icon-512.png</button>
+        <button onclick="downloadBoth()">⬇️ Tải cả 2 file</button>
+        <p class="note">Sau khi tải, đặt 2 file vào thư mục: <strong>App_v2/icons/</strong></p>
+    </div>
+
+    <div class="step" id="result" style="display:none;">
+        <p class="success" id="resultMsg">✅ Đã tải xuống!</p>
+        <p class="note">Nhớ đặt file vào thư mục <strong>App_v2/icons/</strong></p>
+    </div>
+
+    <script>
+        function drawIcon(canvas, size) {
+            const ctx = canvas.getContext('2d');
+            const r = size * 0.22; // border radius
+
+            // Rounded rectangle clip
+            ctx.beginPath();
+            ctx.moveTo(r, 0);
+            ctx.lineTo(size - r, 0);
+            ctx.arcTo(size, 0, size, r, r);
+            ctx.lineTo(size, size - r);
+            ctx.arcTo(size, size, size - r, size, r);
+            ctx.lineTo(r, size);
+            ctx.arcTo(0, size, 0, size - r, r);
+            ctx.lineTo(0, r);
+            ctx.arcTo(0, 0, r, 0, r);
+            ctx.closePath();
+            ctx.clip();
+
+            // Gradient background
+            const grad = ctx.createLinearGradient(0, 0, size, size);
+            grad.addColorStop(0, '#6366f1');
+            grad.addColorStop(0.5, '#8b5cf6');
+            grad.addColorStop(1, '#a855f7');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, size, size);
+
+            // Inner glow overlay
+            const glow = ctx.createLinearGradient(0, 0, size, size);
+            glow.addColorStop(0, 'rgba(255,255,255,0.15)');
+            glow.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.fillStyle = glow;
+            ctx.fillRect(0, 0, size, size);
+
+            // Subtle circle decoration
+            ctx.beginPath();
+            ctx.arc(size / 2, size / 2, size * 0.38, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255,255,255,0.06)';
+            ctx.fill();
+
+            // Small dot decorations
+            ctx.beginPath();
+            ctx.arc(size * 0.2, size * 0.2, size * 0.03, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255,255,255,0.35)';
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(size * 0.8, size * 0.2, size * 0.017, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255,255,255,0.25)';
+            ctx.fill();
+
+            // Main Chinese character 汉
+            const fontSize = Math.round(size * 0.46);
+            ctx.font = `700 ${fontSize}px "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif`;
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.shadowColor = 'rgba(0,0,0,0.3)';
+            ctx.shadowBlur = size * 0.05;
+            ctx.fillText('汉', size / 2, size * 0.46);
+            ctx.shadowBlur = 0;
+
+            // Subtitle 学中文
+            const subtitleSize = Math.round(size * 0.085);
+            ctx.font = `500 ${subtitleSize}px "Inter", "PingFang SC", sans-serif`;
+            ctx.fillStyle = 'rgba(255,255,255,0.8)';
+            ctx.fillText('学中文', size / 2, size * 0.82);
+        }
+
+        // Draw both canvases on load
+        const c192 = document.getElementById('canvas192');
+        const c512 = document.getElementById('canvas512');
+        drawIcon(c192, 192);
+        drawIcon(c512, 512);
+
+        function downloadIcon(size) {
+            const canvas = size === 192 ? c192 : c512;
+            const a = document.createElement('a');
+            a.href = canvas.toDataURL('image/png');
+            a.download = `icon-${size}.png`;
+            a.click();
+            showResult(`✅ Đã tải icon-${size}.png`);
+        }
+
+        async function downloadBoth() {
+            downloadIcon(192);
+            await new Promise(r => setTimeout(r, 600));
+            downloadIcon(512);
+            showResult('✅ Đã tải cả 2 icon! Đặt vào thư mục App_v2/icons/');
+        }
+
+        function showResult(msg) {
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('resultMsg').textContent = msg;
+        }
+    </script>
+</body>
+
+</html>

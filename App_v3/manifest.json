@@ -1,0 +1,30 @@
+{
+    "name": "学中文 - Học Tiếng Trung",
+    "short_name": "学中文",
+    "description": "Ứng dụng học từ vựng tiếng Trung với Flashcard, Quiz và SRS thông minh",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "orientation": "portrait",
+    "background_color": "#0a0a0f",
+    "theme_color": "#6366f1",
+    "lang": "vi",
+    "icons": [
+        {
+            "src": "icons/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "icons/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "categories": [
+        "education",
+        "productivity"
+    ],
+    "screenshots": []
+}
