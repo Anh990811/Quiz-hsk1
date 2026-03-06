@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="FlashMind – Ứng dụng thẻ ghi nhớ thông minh với SRS">
+  <meta name="theme-color" content="#7c3aed">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="FlashMind">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="manifest" href="manifest.json">
+  <title>FlashMind – Thẻ Ghi Nhớ</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/idb@8/build/umd.js"></script>
+</head>
+
+<body>
+
+  <div id="toast"></div>
+  <input type="file" id="input-import-file" accept=".json" style="display:none">
+
+  <div id="app">
+
+    <!-- ════════════════════════════════════════
+     VIEW: HOME
+════════════════════════════════════════ -->
+    <section id="view-home" class="view active">
+      <div class="home-greeting">
+        <h1>FlashMind 🧠</h1>
+        <p id="home-date"></p>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value due" id="stat-due">0</div>
+          <div class="stat-label">Đến hạn</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value new" id="stat-new">0</div>
+          <div class="stat-label">Thẻ mới</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value done" id="stat-done">0</div>
+          <div class="stat-label">Đã ôn</div>
+        </div>
+      </div>
+      <div class="section-title">Cần ôn hôm nay</div>
+      <div class="quick-deck-list" id="quick-deck-list">
+        <div class="empty-state">
+          <div class="empty-icon">📚</div>
+          <p>Tạo bộ thẻ đầu tiên trong tab <strong>Bộ Thẻ</strong></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════
+     VIEW: DECKS
+════════════════════════════════════════ -->
+    <section id="view-decks" class="view">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Bộ Thẻ</div>
+          <div class="page-subtitle">Quản lý bộ sưu tập thẻ</div>
+        </div>
+        <button class="fab" id="btn-add-deck" title="Thêm bộ thẻ">＋</button>
+      </div>
+      <div class="deck-list" id="deck-list"></div>
+    </section>
+
+    <!-- ════════════════════════════════════════
+     VIEW: STUDY
+════════════════════════════════════════ -->
+    <section id="view-study" class="view">
+      <div class="study-header">
+        <button class="btn-back" id="btn-study-back">←</button>
+        <div class="study-title" id="study-deck-title">Ôn tập</div>
+        <span id="study-progress-text" style="font-size:13px;color:var(--text-secondary);font-weight:600"></span>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" style="width:0%"></div>
+      </div>
+
+      <div class="flip-container" id="flip-container">
+        <div class="flip-inner" id="flip-inner">
+          <div class="flip-front">
+            <div class="card-label">Mặt trước</div>
+            <div class="card-content" id="card-front-text"></div>
+            <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-top:10px">
+              <div class="card-hint" style="margin:0">👆 Nhấn để lật</div>
+              <button class="speak-btn" onclick="speakFront()" title="Phát âm mặt trước">🔊</button>
+            </div>
+          </div>
+          <div class="flip-back">
+            <div class="card-label">Mặt sau</div>
+            <div class="card-content" id="card-back-text"></div>
+            <button class="speak-btn" style="margin-top:10px" onclick="speakBack()" title="Phát âm mặt sau">🔊</button>
+            <div id="study-card-tags"
+              style="margin-top:10px;display:flex;flex-wrap:wrap;gap:4px;justify-content:center"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grade-buttons" id="grade-buttons">
+        <button class="grade-btn again" data-grade="0">
+          <span class="grade-emoji">😵</span>
+          <span class="grade-label">Lại</span>
+          <span class="grade-interval">1 ngày</span>
+        </button>
+        <button class="grade-btn hard" data-grade="1">
+          <span class="grade-emoji">😓</span>
+          <span class="grade-label">Khó</span>
+          <span class="grade-interval">—</span>
+        </button>
+        <button class="grade-btn good" data-grade="2">
+          <span class="grade-emoji">😊</span>
+          <span class="grade-label">Tốt</span>
+          <span class="grade-interval">—</span>
+        </button>
+        <button class="grade-btn easy" data-grade="3">
+          <span class="grade-emoji">😎</span>
+          <span class="grade-label">Dễ</span>
+          <span class="grade-interval">—</span>
+        </button>
+      </div>
+
+      <div class="session-done" id="session-done" style="display:none">
+        <div class="done-icon">🎉</div>
+        <h2>Hoàn thành phiên!</h2>
+        <p>Bạn đã ôn <strong id="done-count">0</strong> thẻ.</p>
+        <button class="btn btn-primary" id="btn-done-back" style="margin-top:8px">Quay lại</button>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════
+     VIEW: QUIZ
+════════════════════════════════════════ -->
+    <section id="view-quiz" class="view">
+      <div class="study-header">
+        <button class="btn-back" id="btn-quiz-back">←</button>
+        <div class="study-title">Trắc nghiệm</div>
+        <span id="quiz-progress" style="font-size:13px;color:var(--text-secondary);font-weight:600"></span>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" style="width:0%"></div>
+      </div>
+
+      <div id="quiz-question-wrap">
+        <div class="glass-card"
+          style="padding:24px;text-align:center;margin-bottom:20px;border-radius:var(--radius-xl)">
+          <div class="card-label">Đây là gì?</div>
+          <div class="card-content" id="quiz-question" style="font-size:26px;margin-top:8px"></div>
+        </div>
+        <div class="quiz-options-grid" id="quiz-options"></div>
+      </div>
+
+      <div id="quiz-result-wrap"
+        style="display:none;flex-direction:column;align-items:center;gap:16px;text-align:center;padding:40px 0">
+        <div style="font-size:64px" id="quiz-result-msg">🏆</div>
+        <h2 style="font-size:32px;font-weight:800" id="quiz-final-score">8/10</h2>
+        <div style="font-size:18px;color:var(--text-secondary)" id="quiz-final-pct">80%</div>
+        <div style="display:flex;gap:10px;margin-top:8px">
+          <button class="btn btn-secondary" id="btn-quiz-back2"
+            onclick="document.getElementById('btn-quiz-back').click()">Thoát</button>
+          <button class="btn btn-primary" id="btn-quiz-restart">Làm lại</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════
+     VIEW: STATS
+════════════════════════════════════════ -->
+    <section id="view-stats" class="view">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Thống Kê</div>
+          <div class="page-subtitle">Tiến trình học tập</div>
+        </div>
+      </div>
+
+      <div class="streak-card">
+        <div class="streak-number" id="streak-number">0</div>
+        <div class="streak-label">🔥 Ngày học liên tiếp</div>
+      </div>
+
+      <div class="section-title" style="margin-top:20px">Hoạt động 11 tuần qua</div>
+      <div class="heatmap-wrap glass-card">
+        <div class="heatmap" id="heatmap"></div>
+        <div class="heatmap-legend">
+          <span>Ít</span>
+          <div class="heatmap-cell" data-level="0"></div>
+          <div class="heatmap-cell" data-level="1"></div>
+          <div class="heatmap-cell" data-level="2"></div>
+          <div class="heatmap-cell" data-level="3"></div>
+          <div class="heatmap-cell" data-level="4"></div>
+          <span>Nhiều</span>
+        </div>
+      </div>
+
+      <div class="stats-list" style="margin-top:20px">
+        <div class="stats-row">
+          <span class="stats-row-label">Tổng số thẻ</span>
+          <span class="stats-row-value" id="s-total">0</span>
+        </div>
+        <div class="stats-row">
+          <span class="stats-row-label">Đến hạn hôm nay</span>
+          <span class="stats-row-value" style="color:var(--accent-yellow)" id="s-due">0</span>
+        </div>
+        <div class="stats-row">
+          <span class="stats-row-label">Đã ôn hôm nay</span>
+          <span class="stats-row-value" style="color:var(--accent-green)" id="s-studied">0</span>
+        </div>
+        <div class="stats-row">
+          <span class="stats-row-label">Thẻ thuộc (≥21 ngày)</span>
+          <span class="stats-row-value" style="color:var(--secondary)" id="s-mature">0</span>
+        </div>
+        <div class="stats-row">
+          <span class="stats-row-label">Số bộ thẻ</span>
+          <span class="stats-row-value" id="s-decks">0</span>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:20px">
+        <button class="btn btn-secondary btn-full" id="btn-export">📤 Xuất JSON</button>
+        <button class="btn btn-secondary btn-full" id="btn-import">📥 Nhập JSON</button>
+      </div>
+
+      <div class="section-title" style="margin-top:24px">Tiến độ theo bộ thẻ</div>
+      <div id="deck-stats-list"></div>
+    </section>
+
+    <!-- ════════════════════════════════════════
+     VIEW: SETTINGS
+════════════════════════════════════════ -->
+    <section id="view-settings" class="view">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Cài Đặt</div>
+          <div class="page-subtitle">Tuỳ chỉnh ứng dụng</div>
+        </div>
+      </div>
+
+      <form id="form-settings">
+        <div class="settings-group">
+          <div class="settings-group-title">Ôn tập</div>
+
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <div class="settings-row-name">Số thẻ tối đa/ngày</div>
+              <div class="settings-row-desc">Giới hạn thẻ trong một phiên ôn</div>
+            </div>
+            <input class="form-input" style="width:80px;text-align:center" type="number" id="setting-daily-limit"
+              min="1" max="500" value="20">
+          </div>
+
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <div class="settings-row-name">Tự động lật thẻ</div>
+              <div class="settings-row-desc">Lật thẻ sau một khoảng thời gian</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="setting-auto-flip">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <div class="settings-row-name">Thời gian tự lật (giây)</div>
+            </div>
+            <input class="form-input" style="width:80px;text-align:center" type="number" id="setting-auto-flip-time"
+              min="1" max="30" value="3">
+          </div>
+
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <div class="settings-row-name">Hiển thị gợi ý lật</div>
+              <div class="settings-row-desc">Hiện "Nhấn để lật" trên thẻ</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="setting-show-hint" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <div class="settings-row-name">Tự động phát âm</div>
+              <div class="settings-row-desc">Phát âm khi chuyển thẻ</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="setting-auto-speak" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <div class="settings-group-title">Quiz</div>
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <div class="settings-row-name">Số câu hỏi/bài quiz</div>
+            </div>
+            <input class="form-input" style="width:80px;text-align:center" type="number" id="setting-quiz-limit" min="4"
+              max="50" value="10">
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full" style="margin-top:8px">💾 Lưu cài đặt</button>
+      </form>
+
+      <div class="settings-group" style="margin-top:20px">
+        <div class="settings-group-title">Dữ liệu</div>
+        <button class="btn btn-danger btn-full" id="btn-reset" style="margin-top:4px">🗑️ Xóa toàn bộ dữ liệu</button>
+      </div>
+    </section>
+
+  </div><!-- /#app -->
+
+  <!-- ════════════════════════════════════════
+     BOTTOM NAV
+════════════════════════════════════════ -->
+  <nav id="bottom-nav">
+    <button class="nav-item active" data-view="home">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Trang chủ</span>
+    </button>
+    <button class="nav-item" data-view="decks">
+      <span class="nav-icon">📚</span>
+      <span class="nav-label">Bộ thẻ</span>
+    </button>
+    <button class="nav-item" data-view="stats">
+      <span class="nav-icon">📊</span>
+      <span class="nav-label">Thống kê</span>
+    </button>
+    <button class="nav-item" data-view="settings">
+      <span class="nav-icon">⚙️</span>
+      <span class="nav-label">Cài đặt</span>
+    </button>
+  </nav>
+
+  <!-- ════════════════════════════════════════
+     MODAL: Add Deck
+════════════════════════════════════════ -->
+  <div class="modal-overlay" id="modal-add-deck">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">Tạo bộ thẻ mới</div>
+      <form id="form-add-deck">
+        <div class="form-group">
+          <label class="form-label" for="input-deck-name">Tên bộ thẻ *</label>
+          <input class="form-input" id="input-deck-name" type="text" placeholder="VD: Tiếng Anh cơ bản" required
+            autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="input-deck-desc">Mô tả</label>
+          <input class="form-input" id="input-deck-desc" type="text" placeholder="VD: 500 từ vựng TOEIC"
+            autocomplete="off">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-add-deck')">Hủy</button>
+          <button type="submit" class="btn btn-primary">Tạo</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+     MODAL: Edit Deck
+════════════════════════════════════════ -->
+  <div class="modal-overlay" id="modal-edit-deck">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">Chỉnh sửa bộ thẻ</div>
+      <form id="form-edit-deck">
+        <input type="hidden" id="edit-deck-id">
+        <div class="form-group">
+          <label class="form-label">Tên bộ thẻ *</label>
+          <input class="form-input" id="edit-deck-name" type="text" required autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mô tả</label>
+          <input class="form-input" id="edit-deck-desc" type="text" autocomplete="off">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-edit-deck')">Hủy</button>
+          <button type="submit" class="btn btn-primary">Lưu</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+     MODAL: Deck Detail (Card Manager)
+════════════════════════════════════════ -->
+  <div class="modal-overlay" id="modal-deck-detail">
+    <div class="modal-sheet" style="max-height:88vh;overflow-y:auto">
+      <div class="modal-handle"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div class="modal-title" id="detail-deck-name" style="margin-bottom:0">Bộ thẻ</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-secondary" id="btn-csv-import" style="padding:8px 12px;font-size:13px">📋 CSV</button>
+          <button class="btn btn-primary" id="btn-add-card" style="padding:8px 12px;font-size:13px">+ Thẻ</button>
+        </div>
+      </div>
+      <input class="form-input" id="detail-search" placeholder="🔍 Tìm kiếm thẻ..." style="margin-bottom:12px">
+      <div class="card-list" id="card-list"></div>
+      <button class="btn btn-secondary btn-full" onclick="closeModal('modal-deck-detail')"
+        style="margin-top:12px">Đóng</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+     MODAL: Add Card
+════════════════════════════════════════ -->
+  <div class="modal-overlay" id="modal-add-card">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">Thêm thẻ mới</div>
+      <form id="form-add-card">
+        <div class="form-group">
+          <label class="form-label">Mặt trước *</label>
+          <textarea class="form-textarea" id="input-card-front" placeholder="VD: Hello" required></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mặt sau *</label>
+          <textarea class="form-textarea" id="input-card-back" placeholder="VD: Xin chào" required></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tags (phân cách bằng dấu phẩy)</label>
+          <input class="form-input" id="input-card-tags" placeholder="VD: giao tiếp, cơ bản" autocomplete="off">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-add-card')">Hủy</button>
+          <button type="submit" class="btn btn-primary">Thêm</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+     MODAL: Edit Card
+════════════════════════════════════════ -->
+  <div class="modal-overlay" id="modal-edit-card">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">Chỉnh sửa thẻ</div>
+      <form id="form-edit-card">
+        <input type="hidden" id="edit-card-id">
+        <div class="form-group">
+          <label class="form-label">Mặt trước *</label>
+          <textarea class="form-textarea" id="edit-card-front" required></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mặt sau *</label>
+          <textarea class="form-textarea" id="edit-card-back" required></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tags</label>
+          <input class="form-input" id="edit-card-tags" placeholder="VD: giao tiếp, cơ bản" autocomplete="off">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-edit-card')">Hủy</button>
+          <button type="submit" class="btn btn-primary">Lưu</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+     MODAL: CSV Import
+════════════════════════════════════════ -->
+  <div class="modal-overlay" id="modal-csv">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">Nhập thẻ từ CSV</div>
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px">
+        Mỗi dòng: <code
+          style="background:rgba(255,255,255,0.08);padding:2px 6px;border-radius:4px">mặt trước, mặt sau, tag</code>
+      </p>
+      <form id="form-csv">
+        <textarea class="form-textarea" id="csv-text"
+          placeholder="Hello, Xin chào, giao tiếp&#10;Goodbye, Tạm biệt, giao tiếp&#10;Book, Sách, đồ vật"
+          style="min-height:160px;font-family:monospace;font-size:13px"></textarea>
+        <div class="modal-actions" style="margin-top:12px">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-csv')">Hủy</button>
+          <button type="submit" class="btn btn-primary">Nhập</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+  <script>
+    // Set date on home
+    const homeDate = document.getElementById('home-date');
+    if (homeDate) {
+      const d = new Date();
+      homeDate.textContent = d.toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'long' });
+    }
+  </script>
+</body>
+
+</html>
