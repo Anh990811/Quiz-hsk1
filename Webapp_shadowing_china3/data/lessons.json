@@ -1,0 +1,182 @@
+{
+  "shadowing": [
+    {
+      "id": "s1",
+      "topic": "Chào hỏi",
+      "topicEn": "Greetings",
+      "icon": "👋",
+      "level": "HSK 1",
+      "sentences": [
+        { "id": 1, "chinese": "你好！", "pinyin": "Nǐ hǎo!", "vietnamese": "Xin chào!", "english": "Hello!" },
+        { "id": 2, "chinese": "你好吗？", "pinyin": "Nǐ hǎo ma?", "vietnamese": "Bạn có khỏe không?", "english": "How are you?" },
+        { "id": 3, "chinese": "我很好，谢谢。", "pinyin": "Wǒ hěn hǎo, xièxie.", "vietnamese": "Tôi rất khỏe, cảm ơn.", "english": "I'm fine, thank you." },
+        { "id": 4, "chinese": "再见！", "pinyin": "Zàijiàn!", "vietnamese": "Tạm biệt!", "english": "Goodbye!" },
+        { "id": 5, "chinese": "早上好！", "pinyin": "Zǎoshang hǎo!", "vietnamese": "Chào buổi sáng!", "english": "Good morning!" },
+        { "id": 6, "chinese": "晚上好！", "pinyin": "Wǎnshang hǎo!", "vietnamese": "Chào buổi tối!", "english": "Good evening!" },
+        { "id": 7, "chinese": "请问，你叫什么名字？", "pinyin": "Qǐngwèn, nǐ jiào shénme míngzi?", "vietnamese": "Xin hỏi, bạn tên là gì?", "english": "Excuse me, what's your name?" },
+        { "id": 8, "chinese": "我叫李明。", "pinyin": "Wǒ jiào Lǐ Míng.", "vietnamese": "Tôi tên là Lý Minh.", "english": "My name is Li Ming." }
+      ]
+    },
+    {
+      "id": "s2",
+      "topic": "Giới thiệu bản thân",
+      "topicEn": "Self Introduction",
+      "icon": "🙋",
+      "level": "HSK 1",
+      "sentences": [
+        { "id": 1, "chinese": "我是越南人。", "pinyin": "Wǒ shì Yuènán rén.", "vietnamese": "Tôi là người Việt Nam.", "english": "I am Vietnamese." },
+        { "id": 2, "chinese": "我今年二十岁。", "pinyin": "Wǒ jīnnián èrshí suì.", "vietnamese": "Năm nay tôi hai mươi tuổi.", "english": "I am twenty years old this year." },
+        { "id": 3, "chinese": "我是学生。", "pinyin": "Wǒ shì xuésheng.", "vietnamese": "Tôi là học sinh.", "english": "I am a student." },
+        { "id": 4, "chinese": "我在大学学习汉语。", "pinyin": "Wǒ zài dàxué xuéxí Hànyǔ.", "vietnamese": "Tôi học tiếng Trung ở đại học.", "english": "I study Chinese at university." },
+        { "id": 5, "chinese": "很高兴认识你！", "pinyin": "Hěn gāoxìng rènshi nǐ!", "vietnamese": "Rất vui được gặp bạn!", "english": "Nice to meet you!" },
+        { "id": 6, "chinese": "我喜欢学习中文。", "pinyin": "Wǒ xǐhuān xuéxí Zhōngwén.", "vietnamese": "Tôi thích học tiếng Trung.", "english": "I like learning Chinese." }
+      ]
+    },
+    {
+      "id": "s3",
+      "topic": "Ăn uống",
+      "topicEn": "Food & Drink",
+      "icon": "🍜",
+      "level": "HSK 2",
+      "sentences": [
+        { "id": 1, "chinese": "你想吃什么？", "pinyin": "Nǐ xiǎng chī shénme?", "vietnamese": "Bạn muốn ăn gì?", "english": "What do you want to eat?" },
+        { "id": 2, "chinese": "我想喝茶。", "pinyin": "Wǒ xiǎng hē chá.", "vietnamese": "Tôi muốn uống trà.", "english": "I want to drink tea." },
+        { "id": 3, "chinese": "这个多少钱？", "pinyin": "Zhège duōshǎo qián?", "vietnamese": "Cái này bao nhiêu tiền?", "english": "How much is this?" },
+        { "id": 4, "chinese": "好吃极了！", "pinyin": "Hǎochī jí le!", "vietnamese": "Ngon tuyệt!", "english": "It's extremely delicious!" },
+        { "id": 5, "chinese": "请给我一双筷子。", "pinyin": "Qǐng gěi wǒ yī shuāng kuàizi.", "vietnamese": "Cho tôi một đôi đũa.", "english": "Please give me a pair of chopsticks." },
+        { "id": 6, "chinese": "我不吃辣的。", "pinyin": "Wǒ bù chī là de.", "vietnamese": "Tôi không ăn cay.", "english": "I don't eat spicy food." },
+        { "id": 7, "chinese": "买单！", "pinyin": "Mǎidān!", "vietnamese": "Tính tiền!", "english": "Check please!" }
+      ]
+    },
+    {
+      "id": "s4",
+      "topic": "Đi lại",
+      "topicEn": "Transportation",
+      "icon": "🚇",
+      "level": "HSK 2",
+      "sentences": [
+        { "id": 1, "chinese": "请问，去天安门怎么走？", "pinyin": "Qǐngwèn, qù Tiān'ānmén zěnme zǒu?", "vietnamese": "Xin hỏi, đi Thiên An Môn đi đường nào?", "english": "Excuse me, how do I get to Tiananmen?" },
+        { "id": 2, "chinese": "直走，然后左转。", "pinyin": "Zhí zǒu, ránhòu zuǒ zhuǎn.", "vietnamese": "Đi thẳng, rồi rẽ trái.", "english": "Go straight, then turn left." },
+        { "id": 3, "chinese": "坐地铁几号线？", "pinyin": "Zuò dìtiě jǐ hào xiàn?", "vietnamese": "Đi tàu điện ngầm đường số mấy?", "english": "Which metro line should I take?" },
+        { "id": 4, "chinese": "打车去机场要多少钱？", "pinyin": "Dǎchē qù jīchǎng yào duōshǎo qián?", "vietnamese": "Đi taxi đến sân bay tốn bao nhiêu tiền?", "english": "How much does a taxi to the airport cost?" },
+        { "id": 5, "chinese": "下一站是哪里？", "pinyin": "Xià yī zhàn shì nǎlǐ?", "vietnamese": "Trạm tiếp theo là đâu?", "english": "What is the next stop?" }
+      ]
+    },
+    {
+      "id": "s5",
+      "topic": "Mua sắm",
+      "topicEn": "Shopping",
+      "icon": "🛍️",
+      "level": "HSK 2",
+      "sentences": [
+        { "id": 1, "chinese": "我想买一件衬衫。", "pinyin": "Wǒ xiǎng mǎi yī jiàn chènshān.", "vietnamese": "Tôi muốn mua một chiếc áo sơ mi.", "english": "I want to buy a shirt." },
+        { "id": 2, "chinese": "有没有更便宜的？", "pinyin": "Yǒu méiyǒu gèng piányí de?", "vietnamese": "Có cái nào rẻ hơn không?", "english": "Is there anything cheaper?" },
+        { "id": 3, "chinese": "可以打折吗？", "pinyin": "Kěyǐ dǎzhé ma?", "vietnamese": "Có thể giảm giá không?", "english": "Can you give a discount?" },
+        { "id": 4, "chinese": "我要试穿一下。", "pinyin": "Wǒ yào shì chuān yīxià.", "vietnamese": "Tôi muốn thử mặc một chút.", "english": "I'd like to try it on." },
+        { "id": 5, "chinese": "我可以用微信支付吗？", "pinyin": "Wǒ kěyǐ yòng Wēixìn zhīfù ma?", "vietnamese": "Tôi có thể thanh toán bằng WeChat không?", "english": "Can I pay with WeChat Pay?" }
+      ]
+    },
+    {
+      "id": "s6",
+      "topic": "Công việc",
+      "topicEn": "Work",
+      "icon": "💼",
+      "level": "HSK 3",
+      "sentences": [
+        { "id": 1, "chinese": "你在哪里工作？", "pinyin": "Nǐ zài nǎlǐ gōngzuò?", "vietnamese": "Bạn làm việc ở đâu?", "english": "Where do you work?" },
+        { "id": 2, "chinese": "我在一家互联网公司上班。", "pinyin": "Wǒ zài yī jiā hùliánwǎng gōngsī shàngbān.", "vietnamese": "Tôi làm việc ở một công ty internet.", "english": "I work at an internet company." },
+        { "id": 3, "chinese": "这个项目什么时候完成？", "pinyin": "Zhège xiàngmù shénme shíhòu wánchéng?", "vietnamese": "Dự án này khi nào hoàn thành?", "english": "When will this project be completed?" },
+        { "id": 4, "chinese": "我们需要开一个会议。", "pinyin": "Wǒmen xūyào kāi yī gè huìyì.", "vietnamese": "Chúng ta cần tổ chức một cuộc họp.", "english": "We need to have a meeting." },
+        { "id": 5, "chinese": "请把报告发给我。", "pinyin": "Qǐng bǎ bàogào fā gěi wǒ.", "vietnamese": "Hãy gửi báo cáo cho tôi.", "english": "Please send the report to me." }
+      ]
+    }
+  ],
+  "writing": {
+    "hsk1": [
+      { "char": "一", "pinyin": "yī", "meaning": "một", "strokes": 1 },
+      { "char": "二", "pinyin": "èr", "meaning": "hai", "strokes": 2 },
+      { "char": "三", "pinyin": "sān", "meaning": "ba", "strokes": 3 },
+      { "char": "四", "pinyin": "sì", "meaning": "bốn", "strokes": 5 },
+      { "char": "五", "pinyin": "wǔ", "meaning": "năm", "strokes": 4 },
+      { "char": "六", "pinyin": "liù", "meaning": "sáu", "strokes": 4 },
+      { "char": "七", "pinyin": "qī", "meaning": "bảy", "strokes": 2 },
+      { "char": "八", "pinyin": "bā", "meaning": "tám", "strokes": 2 },
+      { "char": "九", "pinyin": "jiǔ", "meaning": "chín", "strokes": 2 },
+      { "char": "十", "pinyin": "shí", "meaning": "mười", "strokes": 2 },
+      { "char": "人", "pinyin": "rén", "meaning": "người", "strokes": 2 },
+      { "char": "大", "pinyin": "dà", "meaning": "to, lớn", "strokes": 3 },
+      { "char": "小", "pinyin": "xiǎo", "meaning": "nhỏ, bé", "strokes": 3 },
+      { "char": "山", "pinyin": "shān", "meaning": "núi", "strokes": 3 },
+      { "char": "水", "pinyin": "shuǐ", "meaning": "nước", "strokes": 4 },
+      { "char": "火", "pinyin": "huǒ", "meaning": "lửa", "strokes": 4 },
+      { "char": "木", "pinyin": "mù", "meaning": "gỗ, cây", "strokes": 4 },
+      { "char": "口", "pinyin": "kǒu", "meaning": "miệng", "strokes": 3 },
+      { "char": "日", "pinyin": "rì", "meaning": "mặt trời, ngày", "strokes": 4 },
+      { "char": "月", "pinyin": "yuè", "meaning": "mặt trăng, tháng", "strokes": 4 },
+      { "char": "手", "pinyin": "shǒu", "meaning": "tay", "strokes": 4 },
+      { "char": "心", "pinyin": "xīn", "meaning": "tim, lòng", "strokes": 4 },
+      { "char": "你", "pinyin": "nǐ", "meaning": "bạn (ngôi 2)", "strokes": 7 },
+      { "char": "我", "pinyin": "wǒ", "meaning": "tôi (ngôi 1)", "strokes": 7 },
+      { "char": "他", "pinyin": "tā", "meaning": "anh ấy / ông ấy", "strokes": 5 },
+      { "char": "她", "pinyin": "tā", "meaning": "cô ấy / bà ấy", "strokes": 6 },
+      { "char": "好", "pinyin": "hǎo", "meaning": "tốt, khỏe", "strokes": 6 },
+      { "char": "是", "pinyin": "shì", "meaning": "là (động từ)", "strokes": 9 },
+      { "char": "不", "pinyin": "bù", "meaning": "không (phủ định)", "strokes": 4 },
+      { "char": "有", "pinyin": "yǒu", "meaning": "có", "strokes": 6 },
+      { "char": "中", "pinyin": "zhōng", "meaning": "giữa, Trung Hoa", "strokes": 4 },
+      { "char": "国", "pinyin": "guó", "meaning": "đất nước", "strokes": 8 },
+      { "char": "学", "pinyin": "xué", "meaning": "học", "strokes": 8 },
+      { "char": "生", "pinyin": "shēng", "meaning": "sinh ra, học sinh", "strokes": 5 },
+      { "char": "语", "pinyin": "yǔ", "meaning": "ngôn ngữ", "strokes": 9 },
+      { "char": "文", "pinyin": "wén", "meaning": "văn, chữ", "strokes": 4 },
+      { "char": "说", "pinyin": "shuō", "meaning": "nói", "strokes": 9 },
+      { "char": "话", "pinyin": "huà", "meaning": "lời nói", "strokes": 8 },
+      { "char": "来", "pinyin": "lái", "meaning": "đến, lại", "strokes": 7 },
+      { "char": "去", "pinyin": "qù", "meaning": "đi, rời khỏi", "strokes": 5 }
+    ],
+    "hsk2": [
+      { "char": "吃", "pinyin": "chī", "meaning": "ăn", "strokes": 6 },
+      { "char": "喝", "pinyin": "hē", "meaning": "uống", "strokes": 12 },
+      { "char": "看", "pinyin": "kàn", "meaning": "xem, nhìn", "strokes": 9 },
+      { "char": "听", "pinyin": "tīng", "meaning": "nghe", "strokes": 7 },
+      { "char": "写", "pinyin": "xiě", "meaning": "viết", "strokes": 5 },
+      { "char": "读", "pinyin": "dú", "meaning": "đọc", "strokes": 10 },
+      { "char": "买", "pinyin": "mǎi", "meaning": "mua", "strokes": 6 },
+      { "char": "卖", "pinyin": "mài", "meaning": "bán", "strokes": 8 },
+      { "char": "钱", "pinyin": "qián", "meaning": "tiền", "strokes": 10 },
+      { "char": "时", "pinyin": "shí", "meaning": "thời gian", "strokes": 7 },
+      { "char": "间", "pinyin": "jiān", "meaning": "khoảng, giữa", "strokes": 7 },
+      { "char": "年", "pinyin": "nián", "meaning": "năm", "strokes": 6 },
+      { "char": "家", "pinyin": "jiā", "meaning": "nhà, gia đình", "strokes": 10 },
+      { "char": "朋", "pinyin": "péng", "meaning": "bạn (trong bạn bè)", "strokes": 8 },
+      { "char": "友", "pinyin": "yǒu", "meaning": "bạn bè", "strokes": 4 },
+      { "char": "老", "pinyin": "lǎo", "meaning": "già, lâu", "strokes": 6 },
+      { "char": "师", "pinyin": "shī", "meaning": "thầy giáo", "strokes": 6 },
+      { "char": "工", "pinyin": "gōng", "meaning": "công việc, lao động", "strokes": 3 },
+      { "char": "作", "pinyin": "zuò", "meaning": "làm, tác phẩm", "strokes": 7 },
+      { "char": "车", "pinyin": "chē", "meaning": "xe", "strokes": 4 }
+    ],
+    "hsk3": [
+      { "char": "爱", "pinyin": "ài", "meaning": "yêu, tình yêu", "strokes": 10 },
+      { "char": "美", "pinyin": "měi", "meaning": "đẹp", "strokes": 9 },
+      { "char": "明", "pinyin": "míng", "meaning": "sáng, minh", "strokes": 8 },
+      { "char": "白", "pinyin": "bái", "meaning": "trắng, hiểu", "strokes": 5 },
+      { "char": "黑", "pinyin": "hēi", "meaning": "đen, tối", "strokes": 12 },
+      { "char": "红", "pinyin": "hóng", "meaning": "đỏ", "strokes": 6 },
+      { "char": "绿", "pinyin": "lǜ", "meaning": "xanh lá", "strokes": 11 },
+      { "char": "蓝", "pinyin": "lán", "meaning": "xanh dương", "strokes": 13 },
+      { "char": "高", "pinyin": "gāo", "meaning": "cao", "strokes": 10 },
+      { "char": "低", "pinyin": "dī", "meaning": "thấp", "strokes": 7 },
+      { "char": "快", "pinyin": "kuài", "meaning": "nhanh", "strokes": 7 },
+      { "char": "慢", "pinyin": "màn", "meaning": "chậm", "strokes": 14 },
+      { "char": "新", "pinyin": "xīn", "meaning": "mới", "strokes": 13 },
+      { "char": "旧", "pinyin": "jiù", "meaning": "cũ", "strokes": 5 },
+      { "char": "热", "pinyin": "rè", "meaning": "nóng", "strokes": 10 },
+      { "char": "冷", "pinyin": "lěng", "meaning": "lạnh", "strokes": 7 },
+      { "char": "多", "pinyin": "duō", "meaning": "nhiều", "strokes": 6 },
+      { "char": "少", "pinyin": "shǎo", "meaning": "ít", "strokes": 4 },
+      { "char": "长", "pinyin": "cháng", "meaning": "dài", "strokes": 4 },
+      { "char": "短", "pinyin": "duǎn", "meaning": "ngắn", "strokes": 12 }
+    ]
+  }
+}
