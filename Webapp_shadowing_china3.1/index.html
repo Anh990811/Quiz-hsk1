@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Luyện tiếng Trung thông minh theo giáo trình HSK: Shadowing nghe nói và luyện viết chữ Hán theo nét bút chuẩn" />
+  <title>汉语学习 – Luyện Tiếng Trung HSK</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet" />
+
+  <!-- HanziWriter – stroke animation library -->
+  <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
+
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0d0d14" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- ========== SPLASH ========== -->
+<div id="splash-screen" class="splash">
+  <div class="splash-content">
+    <div class="splash-logo">
+      <span class="splash-char">汉</span>
+      <span class="splash-char">语</span>
+      <span class="splash-char delay">学</span>
+      <span class="splash-char delay">习</span>
+    </div>
+    <p class="splash-sub">Luyện Tiếng Trung Theo Giáo Trình HSK</p>
+    <div class="splash-loader"><div class="loader-bar"></div></div>
+  </div>
+</div>
+
+<!-- ========== APP ========== -->
+<div id="app" class="app hidden">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-char">汉</span>
+      <div class="brand-text">语学习</div>
+    </div>
+    <div class="nav-links">
+      <button class="nav-item active" data-page="dashboard" id="nav-dashboard">
+        <span class="nav-icon">🏠</span><span class="nav-label">Tổng quan</span>
+      </button>
+      <button class="nav-item" data-page="lessons" id="nav-lessons">
+        <span class="nav-icon">📚</span><span class="nav-label">Bài học</span>
+      </button>
+      <button class="nav-item" data-page="shadowing" id="nav-shadowing">
+        <span class="nav-icon">🎧</span><span class="nav-label">Shadowing</span>
+      </button>
+      <button class="nav-item" data-page="writing" id="nav-writing">
+        <span class="nav-icon">✍️</span><span class="nav-label">Luyện viết</span>
+      </button>
+      <button class="nav-item" data-page="vocab" id="nav-vocab">
+        <span class="nav-icon">🗂️</span><span class="nav-label">Từ vựng SRS</span>
+      </button>
+    </div>
+    <div class="sidebar-footer">
+      <div class="streak-badge">
+        <span class="streak-fire">🔥</span>
+        <span id="sidebar-streak-count">0</span>
+        <span class="streak-label">ngày</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MOBILE HEADER -->
+  <header class="mobile-header">
+    <button class="menu-toggle" id="menu-toggle" aria-label="Mở menu">
+      <span></span><span></span><span></span>
+    </button>
+    <span class="mobile-title" id="mobile-title">Tổng quan</span>
+    <div class="mobile-streak">🔥 <span id="mobile-streak-count">0</span></div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <!-- ===== DASHBOARD ===== -->
+    <section class="page active" id="page-dashboard">
+      <div class="page-header">
+        <h1 class="page-title">Chào mừng trở lại! 👋</h1>
+        <p class="page-subtitle" id="dashboard-date"></p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card accent-red">
+          <div class="stat-icon">🎧</div>
+          <div class="stat-info">
+            <span class="stat-value" id="stat-sentences">0</span>
+            <span class="stat-label">Câu đã luyện</span>
+          </div>
+        </div>
+        <div class="stat-card accent-gold">
+          <div class="stat-icon">✍️</div>
+          <div class="stat-info">
+            <span class="stat-value" id="stat-chars">0</span>
+            <span class="stat-label">Chữ đã viết</span>
+          </div>
+        </div>
+        <div class="stat-card accent-jade">
+          <div class="stat-icon">🔥</div>
+          <div class="stat-info">
+            <span class="stat-value" id="stat-streak">0</span>
+            <span class="stat-label">Chuỗi ngày</span>
+          </div>
+        </div>
+        <div class="stat-card accent-purple">
+          <div class="stat-icon">⏱️</div>
+          <div class="stat-info">
+            <span class="stat-value" id="stat-minutes">0</span>
+            <span class="stat-label">Phút học</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <div class="section-card-header">
+          <h2 class="section-title">📅 Lịch học tập</h2>
+          <span class="section-subtitle">4 tuần gần nhất</span>
+        </div>
+        <div class="heatmap" id="heatmap"></div>
+        <div class="heatmap-legend">
+          <span>Ít</span>
+          <div class="legend-dots">
+            <div class="legend-dot l0"></div><div class="legend-dot l1"></div>
+            <div class="legend-dot l2"></div><div class="legend-dot l3"></div>
+            <div class="legend-dot l4"></div>
+          </div>
+          <span>Nhiều</span>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <div class="section-card-header"><h2 class="section-title">⚡ Bắt đầu nhanh</h2></div>
+        <div class="quick-actions">
+          <button class="quick-btn" id="quick-lessons-btn">
+            <span class="qb-icon">📚</span>
+            <span class="qb-text">
+              <strong>Vào bài học</strong>
+              <small>50 bài theo giáo trình HSK 1–3</small>
+            </span>
+            <span class="qb-arrow">→</span>
+          </button>
+          <button class="quick-btn" id="quick-shadow-btn">
+            <span class="qb-icon">🎧</span>
+            <span class="qb-text">
+              <strong>Luyện Shadowing</strong>
+              <small>Nghe và lặp lại theo người bản ngữ</small>
+            </span>
+            <span class="qb-arrow">→</span>
+          </button>
+          <button class="quick-btn" id="quick-write-btn">
+            <span class="qb-icon">✍️</span>
+            <span class="qb-text">
+              <strong>Luyện viết chữ Hán</strong>
+              <small>Viết theo nét bút chuẩn HSK</small>
+            </span>
+            <span class="qb-arrow">→</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <div class="section-card-header"><h2 class="section-title">📈 Tiến độ HSK</h2></div>
+        <div class="hsk-progress" id="hsk-progress"></div>
+      </div>
+    </section>
+
+    <!-- ===== LESSONS PAGE ===== -->
+    <section class="page" id="page-lessons">
+      <div class="page-header">
+        <h1 class="page-title">📚 Bài học HSK</h1>
+        <p class="page-subtitle">50 bài học theo giáo trình chuẩn HSK 1 – 3</p>
+      </div>
+
+      <!-- Level filter tabs -->
+      <div class="lesson-level-tabs" id="lesson-level-tabs">
+        <button class="lesson-level-tab active" data-filter="all" id="filter-all">Tất cả</button>
+        <button class="lesson-level-tab" data-filter="HSK 1" id="filter-hsk1">HSK 1 <span class="tab-count">15</span></button>
+        <button class="lesson-level-tab" data-filter="HSK 2" id="filter-hsk2">HSK 2 <span class="tab-count">15</span></button>
+        <button class="lesson-level-tab" data-filter="HSK 3" id="filter-hsk3">HSK 3 <span class="tab-count">20</span></button>
+      </div>
+
+      <!-- Lessons grid -->
+      <div class="lessons-grid" id="lessons-grid"></div>
+    </section>
+
+    <!-- ===== SHADOWING ===== -->
+    <section class="page" id="page-shadowing">
+
+      <!-- Topic list -->
+      <div id="shadow-topic-view">
+        <div class="page-header">
+          <h1 class="page-title">🎧 Shadowing</h1>
+          <p class="page-subtitle">Chọn chủ đề để bắt đầu luyện tập</p>
+        </div>
+
+        <!-- Level filter -->
+        <div class="hsk-tabs" id="shadow-level-tabs">
+          <button class="hsk-tab active" data-level="all" id="shadow-tab-all">Tất cả</button>
+          <button class="hsk-tab" data-level="HSK 1" id="shadow-tab-hsk1">HSK 1</button>
+          <button class="hsk-tab" data-level="HSK 2" id="shadow-tab-hsk2">HSK 2</button>
+          <button class="hsk-tab" data-level="HSK 3" id="shadow-tab-hsk3">HSK 3</button>
+        </div>
+
+        <div class="topic-grid" id="topic-grid"></div>
+      </div>
+
+      <!-- Lesson view -->
+      <div id="shadow-lesson-view" class="hidden">
+        <div class="lesson-header">
+          <button class="back-btn" id="shadow-back-btn">← Chủ đề</button>
+          <div class="lesson-meta">
+            <div class="lesson-title-wrap">
+              <span id="lesson-icon" class="lesson-icon-big"></span>
+              <h1 id="lesson-title" class="lesson-title"></h1>
+            </div>
+            <span class="lesson-level-badge" id="lesson-level-badge"></span>
+          </div>
+          <!-- Grammar note -->
+          <div class="lesson-grammar-note" id="lesson-grammar-note"></div>
+          <div class="lesson-progress-bar">
+            <div class="lesson-progress-fill" id="lesson-progress-fill"></div>
+          </div>
+          <div class="lesson-progress-text">
+            <span id="lesson-progress-text">0 / 0 câu</span>
+          </div>
+        </div>
+
+        <!-- Tab switcher: Câu luyện / Hội thoại -->
+        <div class="lesson-tabs" id="lesson-tabs">
+          <button class="lesson-tab-btn active" data-tab="sentences" id="tab-sentences">🎧 Câu luyện</button>
+          <button class="lesson-tab-btn" data-tab="dialogue" id="tab-dialogue">💬 Hội thoại</button>
+        </div>
+
+        <!-- ===== SENTENCES PANEL ===== -->
+        <div id="lesson-sentences-panel">
+          <!-- Sentence card -->
+          <div class="sentence-card" id="sentence-card">
+            <div class="sentence-number" id="sentence-num">1</div>
+            <div class="sentence-chinese" id="sentence-chinese">你好！</div>
+            <div class="sentence-pinyin" id="sentence-pinyin">Nǐ hǎo!</div>
+            <div class="translation-toggle-area">
+              <button class="translation-toggle" id="trans-toggle">👁️ Hiện nghĩa</button>
+              <div class="sentence-translation hidden" id="sentence-translation"></div>
+            </div>
+          </div>
+
+          <!-- Radical Info Panel -->
+          <div id="radical-info-panel" class="radical-info-panel hidden">
+            <div class="radical-info-header">
+              <span class="radical-char-focus" id="radical-char-focus"></span>
+              <button class="radical-close-btn" id="radical-close-btn">×</button>
+            </div>
+            <div class="radical-info-body" id="radical-info-body">
+              <!-- Content injected via JS -->
+            </div>
+          </div>
+
+          <!-- Controls -->
+          <div class="sentence-controls">
+            <div class="speed-controls">
+              <span class="control-label">Tốc độ:</span>
+              <button class="speed-btn" data-speed="0.5" id="speed-05">0.5×</button>
+              <button class="speed-btn active" data-speed="0.75" id="speed-075">0.75×</button>
+              <button class="speed-btn" data-speed="1" id="speed-1">1×</button>
+            </div>
+
+            <div class="playback-controls">
+              <button class="ctrl-btn secondary" id="prev-btn">⏮ Trước</button>
+              <button class="ctrl-btn primary pulse-btn" id="play-btn">▶ Phát</button>
+              <button class="ctrl-btn secondary" id="next-btn">Tiếp ⏭</button>
+            </div>
+
+            <div class="record-area">
+              <button class="record-btn" id="record-btn">
+                <span class="record-dot"></span>
+                <span id="record-label">🎙️ Ghi âm</span>
+              </button>
+              <div class="record-waveform" id="record-waveform">
+                <div class="wave-bar" style="--i:0"></div><div class="wave-bar" style="--i:1"></div>
+                <div class="wave-bar" style="--i:2"></div><div class="wave-bar" style="--i:3"></div>
+                <div class="wave-bar" style="--i:4"></div><div class="wave-bar" style="--i:5"></div>
+                <div class="wave-bar" style="--i:6"></div><div class="wave-bar" style="--i:7"></div>
+              </div>
+            </div>
+
+            <div class="recognition-result" id="recognition-result">
+              <span style="color:var(--text-muted);font-size:0.85rem">Nhấn Ghi âm rồi đọc câu phía trên</span>
+            </div>
+
+            <div class="options-row">
+              <label class="toggle-option">
+                <input type="checkbox" id="loop-toggle">
+                <span class="toggle-slider"></span>
+                <span class="toggle-text">🔁 Lặp lại</span>
+              </label>
+              <label class="toggle-option">
+                <input type="checkbox" id="auto-next-toggle">
+                <span class="toggle-slider"></span>
+                <span class="toggle-text">⏭ Tự động tiếp</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="sentence-list-section">
+            <h3 class="sub-section-title">Danh sách câu</h3>
+            <div class="sentence-list" id="sentence-list"></div>
+          </div>
+        </div>
+        <!-- ===== END SENTENCES PANEL ===== -->
+
+        <!-- ===== DIALOGUE PANEL ===== -->
+        <div id="lesson-dialogue-panel" class="hidden">
+          <div id="dialogue-content"></div>
+        </div>
+        <!-- ===== END DIALOGUE PANEL ===== -->
+
+      </div>
+    </section>
+
+    <!-- ===== WRITING ===== -->
+    <section class="page" id="page-writing">
+
+      <!-- List view -->
+      <div id="writing-list-view">
+        <div class="page-header">
+          <h1 class="page-title">✍️ Luyện viết chữ Hán</h1>
+          <p class="page-subtitle">Học viết theo nét bút chuẩn</p>
+        </div>
+        <div class="hsk-tabs">
+          <button class="hsk-tab active" data-level="hsk1" id="tab-hsk1">HSK 1</button>
+          <button class="hsk-tab" data-level="hsk2" id="tab-hsk2">HSK 2</button>
+          <button class="hsk-tab" data-level="hsk3" id="tab-hsk3">HSK 3</button>
+        </div>
+        <div class="char-grid" id="char-grid"></div>
+      </div>
+
+      <!-- Practice view -->
+      <div id="writing-practice-view" class="hidden">
+        <div class="lesson-header">
+          <button class="back-btn" id="writing-back-btn">← Danh sách</button>
+          <div class="practice-char-info">
+            <span class="practice-char-big" id="practice-char-display"></span>
+            <div class="practice-char-details">
+              <span class="practice-pinyin" id="practice-pinyin-display"></span>
+              <span class="practice-meaning" id="practice-meaning-display"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mode-selector">
+          <button class="mode-btn active" data-mode="learn" id="mode-learn">🎬 Học nét</button>
+          <button class="mode-btn" data-mode="practice" id="mode-practice">✏️ Luyện tập</button>
+          <button class="mode-btn" data-mode="quiz" id="mode-quiz">📝 Kiểm tra</button>
+        </div>
+
+        <div class="canvas-area">
+          <div class="canvas-container">
+            <div class="canvas-grid-lines"></div>
+            <div id="hanzi-writer-target"></div>
+          </div>
+          <div class="canvas-controls">
+            <button class="canvas-btn" id="animate-btn">▶ Xem animation</button>
+            <button class="canvas-btn" id="hint-btn" style="display:none">💡 Gợi ý</button>
+            <button class="canvas-btn" id="reset-btn" style="display:none">🔄 Xóa</button>
+          </div>
+        </div>
+
+        <div class="stroke-info">
+          <span class="stroke-label">Nét bút:</span>
+          <span class="stroke-value" id="stroke-current">0</span>
+          <span class="stroke-sep">/</span>
+          <span class="stroke-total" id="stroke-total">0</span>
+          <div class="stroke-bar">
+            <div class="stroke-bar-fill" id="stroke-bar-fill"></div>
+          </div>
+        </div>
+
+        <div class="quiz-feedback hidden" id="quiz-feedback">
+          <div class="feedback-icon" id="feedback-icon">✓</div>
+          <div class="feedback-text" id="feedback-text">Xuất sắc!</div>
+          <button class="ctrl-btn primary" id="next-char-btn">Chữ tiếp theo →</button>
+        </div>
+
+        <div class="char-navigation">
+          <button class="ctrl-btn secondary" id="write-prev-btn">← Trước</button>
+          <span class="char-nav-pos" id="char-nav-pos">1 / 40</span>
+          <button class="ctrl-btn secondary" id="write-next-btn">Tiếp →</button>
+        </div>
+
+        <div class="example-section">
+          <h3 class="sub-section-title">📖 Ví dụ</h3>
+          <div class="example-sentences" id="example-sentences"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== VOCAB SRS PAGE ===== -->
+    <section class="page" id="page-vocab">
+      <div class="page-header">
+        <h1 class="page-title">🗂️ Ôn tập Từ vựng SRS</h1>
+        <p class="page-subtitle">Học từ mới và ôn vựng theo lặp lại ngắt quãng</p>
+      </div>
+      
+      <!-- Dashboard SRS -->
+      <div id="vocab-dashboard" style="margin-bottom: 24px;">
+        <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr);">
+          <div class="stat-card accent-purple">
+            <div class="stat-info">
+              <span class="stat-value" id="srs-due-count">0</span>
+              <span class="stat-label">Từ cần ôn hôm nay</span>
+            </div>
+            <button class="ctrl-btn primary" id="btn-start-review" style="margin-left: auto;">Bắt đầu ôn</button>
+          </div>
+          <div class="stat-card accent-jade">
+            <div class="stat-info">
+              <span class="stat-value" id="srs-new-count">0</span>
+              <span class="stat-label">Từ mới có thể học</span>
+            </div>
+            <button class="ctrl-btn secondary" id="btn-start-new" style="margin-left: auto;">Học từ mới</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Flashcard UI -->
+      <div id="vocab-flashcard-area" class="hidden">
+        <button class="back-btn" id="vocab-back-btn">← Quay lại kho từ</button>
+        <div class="sentence-card">
+          <div class="sentence-chinese" id="fc-chinese" style="font-size: 4rem; margin-bottom: 24px; cursor: pointer;"></div>
+          <div id="fc-back-side" class="hidden">
+            <div class="sentence-pinyin" id="fc-pinyin" style="font-size: 1.5rem"></div>
+            <div class="sentence-translation" id="fc-vietnamese" style="font-size: 1.2rem; margin-top: 10px; color: var(--text-primary)"></div>
+            <div style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 5px;" id="fc-english"></div>
+          </div>
+        </div>
+        
+        <div style="display: flex; justify-content: center; margin-top: 20px;" id="fc-flip-btn-area">
+          <button class="ctrl-btn primary" id="btn-flip-card" style="font-size: 1.1rem; padding: 12px 32px;">Hiện đáp án</button>
+        </div>
+
+        <div id="fc-rating-area" class="options-row hidden" style="margin-top: 20px;">
+          <button class="ctrl-btn secondary" id="btn-rate-1" style="border-color: var(--accent-red); color: var(--accent-red);">Quên<br><small>1 phút</small></button>
+          <button class="ctrl-btn secondary" id="btn-rate-2" style="border-color: var(--accent-gold); color: var(--accent-gold);">Khó<br><small>10 phút</small></button>
+          <button class="ctrl-btn secondary" id="btn-rate-3" style="border-color: var(--accent-jade); color: var(--accent-jade);">Tốt<br><small>1 ngày</small></button>
+          <button class="ctrl-btn secondary" id="btn-rate-4" style="border-color: var(--accent-blue); color: var(--accent-blue);">Dễ<br><small>4 ngày</small></button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+<!-- Sidebar overlay -->
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<!-- Scripts: data.js first, then modules -->
+<script src="data.js"></script>
+<script src="radicals.js"></script>
+<script src="dialogues.js"></script>
+<script src="vocab.js"></script>
+<script src="app.js"></script>
+<script src="shadowing.js"></script>
+<script src="dialogue.js"></script>
+<script src="writing.js"></script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log('Service Worker registered', reg))
+        .catch(err => console.error('Service Worker registration failed', err));
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    // Dashboard quick-action buttons
+    document.getElementById('quick-lessons-btn').addEventListener('click', function() { goToPage('lessons'); });
+    document.getElementById('quick-shadow-btn').addEventListener('click', function() { goToPage('shadowing'); });
+    document.getElementById('quick-write-btn').addEventListener('click',  function() { goToPage('writing'); });
+
+    // Shadowing: speed buttons
+    document.getElementById('speed-05').addEventListener('click',  function() { setSpeed(0.5); });
+    document.getElementById('speed-075').addEventListener('click', function() { setSpeed(0.75); });
+    document.getElementById('speed-1').addEventListener('click',   function() { setSpeed(1); });
+
+    // Shadowing: playback
+    document.getElementById('play-btn').addEventListener('click',  playSentence);
+    document.getElementById('prev-btn').addEventListener('click',  prevSentence);
+    document.getElementById('next-btn').addEventListener('click',  nextSentence);
+    document.getElementById('record-btn').addEventListener('click', toggleRecord);
+    document.getElementById('trans-toggle').addEventListener('click', toggleTranslation);
+    document.getElementById('loop-toggle').addEventListener('change', function() { toggleLoop(this); });
+    document.getElementById('auto-next-toggle').addEventListener('change', function() { toggleAutoNext(this); });
+
+    // Shadowing: level filter tabs
+    document.querySelectorAll('#shadow-level-tabs .hsk-tab').forEach(function(btn) {
+      btn.addEventListener('click', function() { filterShadowByLevel(this.dataset.level); });
+    });
+
+    // Writing: HSK tabs
+    document.getElementById('tab-hsk1').addEventListener('click', function() { switchHSKLevel('hsk1'); });
+    document.getElementById('tab-hsk2').addEventListener('click', function() { switchHSKLevel('hsk2'); });
+    document.getElementById('tab-hsk3').addEventListener('click', function() { switchHSKLevel('hsk3'); });
+
+    // Writing: mode buttons
+    document.getElementById('mode-learn').addEventListener('click',    function() { setWritingMode('learn'); });
+    document.getElementById('mode-practice').addEventListener('click', function() { setWritingMode('practice'); });
+    document.getElementById('mode-quiz').addEventListener('click',     function() { setWritingMode('quiz'); });
+
+    // Writing: canvas controls
+    document.getElementById('animate-btn').addEventListener('click', animateCharacter);
+    document.getElementById('hint-btn').addEventListener('click',    showHint);
+    document.getElementById('reset-btn').addEventListener('click',   resetDrawing);
+
+    // Writing: navigation
+    document.getElementById('write-prev-btn').addEventListener('click', prevCharacter);
+    document.getElementById('write-next-btn').addEventListener('click', nextCharacter);
+    document.getElementById('next-char-btn').addEventListener('click',  nextCharacter);
+
+    // Sidebar overlay click
+    document.getElementById('sidebar-overlay').addEventListener('click', closeSidebar);
+
+    // Lessons level filter
+    document.querySelectorAll('#lesson-level-tabs .lesson-level-tab').forEach(function(btn) {
+      btn.addEventListener('click', function() { filterLessonsByLevel(this.dataset.filter); });
+    });
+
+    // Lesson tabs: Câu luyện / Hội thoại
+    document.querySelectorAll('#lesson-tabs .lesson-tab-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() { switchLessonTab(this.dataset.tab); });
+    });
+  });
+</script>
+
+</body>
+</html>
