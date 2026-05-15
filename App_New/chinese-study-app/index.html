@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống Học Tiếng Trung Premium</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body class="light-mode">
+    <div class="app-container">
+        <!-- Sidebar / Header -->
+        <header class="glass-header">
+            <div class="logo">
+                <i class="fa-solid fa-yin-yang"></i>
+                <span>HanYu Mastery</span>
+            </div>
+            <nav class="nav-links">
+                <button class="nav-btn active" data-target="study-view"><i class="fa-solid fa-book-open"></i> Học Tập</button>
+                <button class="nav-btn" data-target="pinyin-view"><i class="fa-solid fa-microphone-lines"></i> Thanh Mẫu</button>
+                <button class="nav-btn" data-target="manage-view"><i class="fa-solid fa-database"></i> Quản Lý Dữ Liệu</button>
+                <button class="theme-toggle" id="theme-toggle"><i class="fa-solid fa-moon"></i></button>
+            </nav>
+        </header>
+
+        <main class="main-content">
+            <!-- View: Chọn bài học & Chế độ -->
+            <section id="study-view" class="view-section active">
+                <div class="view-header">
+                    <h1>Chọn Chế Độ Học</h1>
+                    <p>Chọn nhóm từ vựng và phương pháp học phù hợp với bạn.</p>
+                </div>
+                
+                <div class="study-setup">
+                    <div class="class-selector">
+                        <h3>1. Chọn lớp học</h3>
+                        <select id="study-class-select" class="premium-select">
+                            <!-- Options populated by JS -->
+                        </select>
+                    </div>
+
+                    <div class="group-selector">
+                        <h3>2. Chọn nhóm học</h3>
+                        <select id="study-group-select" class="premium-select">
+                            <!-- Options populated by JS -->
+                        </select>
+                    </div>
+
+                    <div class="mode-selector">
+                        <h3>3. Chọn chế độ học</h3>
+                        <div class="mode-cards">
+                            <div class="mode-card" data-mode="vi-zh" style="--card-color: #f59e0b;">
+                                <div class="mode-icon">译</div>
+                                <div class="mode-info">
+                                    <h4>Việt → Trung</h4>
+                                    <p>Xem tiếng Việt, viết chữ Hán</p>
+                                </div>
+                            </div>
+                            <div class="mode-card" data-mode="zh-vi" style="--card-color: #ef4444;">
+                                <div class="mode-icon">解</div>
+                                <div class="mode-info">
+                                    <h4>Trung → Việt</h4>
+                                    <p>Xem chữ Hán, viết nghĩa tiếng Việt</p>
+                                </div>
+                            </div>
+                            <div class="mode-card" data-mode="zh-zh" style="--card-color: #334155;">
+                                <div class="mode-icon">写</div>
+                                <div class="mode-info">
+                                    <h4>Trung → Trung</h4>
+                                    <p>Luyện viết: xem và viết lại chữ Hán</p>
+                                </div>
+                            </div>
+                            <div class="mode-card" data-mode="listen-vi" style="--card-color: #0ea5e9;">
+                                <div class="mode-icon">听</div>
+                                <div class="mode-info">
+                                    <h4>Nghe hiểu</h4>
+                                    <p>Nghe tiếng Trung, viết nghĩa tiếng Việt</p>
+                                </div>
+                            </div>
+                            <div class="mode-card" data-mode="speak-zh" style="--card-color: #8b5cf6;">
+                                <div class="mode-icon">说</div>
+                                <div class="mode-info">
+                                    <h4>Luyện Phát Âm</h4>
+                                    <p>Nhìn chữ Hán, đọc tiếng Trung</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- View: Study Session -->
+            <section id="session-view" class="view-section hidden">
+                <div class="session-header glass-panel">
+                    <button class="back-btn" id="end-session-btn"><i class="fa-solid fa-arrow-left"></i> Kết thúc</button>
+                    <div class="session-title">
+                        <h2 id="session-group-name">Tên Bài Học</h2>
+                        <span class="session-mode-badge" id="session-mode-name">Việt → Trung</span>
+                    </div>
+                </div>
+
+                <div class="progress-container glass-panel">
+                    <div class="progress-info">
+                        <span id="progress-text">Câu 1/10</span>
+                        <span id="progress-mode-hint" class="hint-text">Việt → Trung</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill" style="width: 10%;"></div>
+                    </div>
+                    <div class="question-pagination" id="question-pagination">
+                        <!-- Pagination buttons populated by JS -->
+                    </div>
+                </div>
+
+                <div class="question-container glass-panel">
+                    <div class="question-content">
+                        <button class="play-audio-btn hidden" id="play-audio-btn"><i class="fa-solid fa-volume-high"></i></button>
+                        <h3 id="question-text">Anh cảm thấy khi nào đi Trung Quốc du lịch là tốt nhất?</h3>
+                        <p id="question-hint" class="text-hint">Dịch sang tiếng Trung</p>
+                    </div>
+                    
+                    <div class="answer-section">
+                        <textarea id="answer-input" class="premium-input" placeholder="Nhập câu trả lời của bạn ở đây..." rows="3"></textarea>
+                        
+                        <!-- Luyện phát âm -->
+                        <div id="speech-container" class="hidden text-center" style="padding: 20px 0;">
+                            <button id="start-record-btn" class="primary-btn" style="border-radius: 50%; width: 80px; height: 80px; font-size: 2rem; box-shadow: 0 4px 20px rgba(139,92,246,0.4); background: #8b5cf6;"><i class="fa-solid fa-microphone"></i></button>
+                            <p id="speech-status" class="hint-text" style="margin-top: 12px;">Bấm vào mic để bắt đầu nói</p>
+                        </div>
+                        
+                        <button id="submit-answer-btn" class="primary-btn">Kiểm tra</button>
+                    </div>
+
+                    <div id="feedback-section" class="feedback-panel hidden">
+                        <!-- Top section -->
+                        <div class="feedback-top" id="feedback-top">
+                            <div class="feedback-status-badge">
+                                <i id="feedback-icon" class="fa-solid"></i>
+                                <span id="feedback-status-text">CHƯA ĐÚNG</span>
+                            </div>
+                            
+                            <div class="feedback-user-input hidden" id="feedback-user-input-container">
+                                <span class="user-input-label">BẠN ĐÃ NHẬP</span>
+                                <div id="user-input-text" class="user-input-value"></div>
+                            </div>
+
+                            <div class="feedback-correct-main">
+                                <h1 id="correct-zh-main" class="correct-zh">旅游</h1>
+                                <div class="pinyin-audio">
+                                    <span id="correct-pinyin-main" class="correct-pinyin">lǚyóu</span>
+                                    <button class="icon-audio-btn" id="feedback-audio-btn"><i class="fa-solid fa-volume-high"></i></button>
+                                </div>
+                                <h2 id="correct-vi-main" class="correct-vi">du lịch</h2>
+                            </div>
+                        </div>
+
+                        <!-- Bottom analysis section -->
+                        <div class="feedback-analysis hidden" id="feedback-analysis">
+                            <!-- Nghĩa -->
+                            <div class="analysis-row hidden" id="row-meaning">
+                                <div class="row-label"><i class="fa-solid fa-layer-group"></i> NGHĨA</div>
+                                <div class="row-content">
+                                    <div><span class="badge-like-text" id="analysis-meaning"></span></div>
+                                </div>
+                            </div>
+                            <!-- Ví dụ -->
+                            <div class="analysis-row hidden" id="row-example">
+                                <div class="row-label"><i class="fa-regular fa-lightbulb"></i> VÍ DỤ</div>
+                                <div class="row-content text-center">
+                                    <div class="ex-zh" id="analysis-ex-zh"></div>
+                                    <div class="ex-pinyin-vi" id="analysis-ex-pinyin-vi"></div>
+                                </div>
+                            </div>
+                            <!-- Cấu trúc -->
+                            <div class="analysis-row hidden" id="row-structure">
+                                <div class="row-label" style="color: #7c3aed;"><i class="fa-solid fa-code-branch"></i> CẤU TRÚC</div>
+                                <div class="row-content text-center">
+                                    <div><span class="struct-badge" id="analysis-structure"></span></div>
+                                    <div class="struct-vi" id="analysis-struct-vi"></div>
+                                </div>
+                            </div>
+                            <!-- Ngữ pháp -->
+                            <div class="analysis-row hidden" id="row-grammar">
+                                <div class="row-label" style="color: #0ea5e9;"><i class="fa-solid fa-spell-check"></i> NGỮ PHÁP</div>
+                                <div class="row-content">
+                                    <p id="analysis-grammar" class="grammar-text" style="color: #0369a1; line-height: 1.5;"></p>
+                                </div>
+                            </div>
+                            <!-- Ghi chú -->
+                            <div class="analysis-row hidden" id="row-note" style="background-color: var(--warning-bg, #fffbeb);">
+                                <div class="row-label text-warning"><i class="fa-regular fa-note-sticky"></i> GHI CHÚ</div>
+                                <div class="row-content">
+                                    <p id="analysis-note" class="note-text"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="padding: 20px;">
+                            <button id="next-question-btn" class="primary-btn full-width hidden">Tiếp tục <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Session End Screen -->
+                <div id="session-end-screen" class="glass-panel hidden text-center">
+                    <h2>🎉 Hoàn thành bài học!</h2>
+                    <p>Bạn đã hoàn thành tất cả các câu hỏi.</p>
+                    <div class="score-display">
+                        <span class="score-number" id="final-score">8/10</span>
+                        <span class="score-label">Chính xác</span>
+                    </div>
+                    <button class="primary-btn" id="restart-session-btn">Học lại bài này</button>
+                    <button class="secondary-btn" id="back-to-menu-btn">Về màn hình chính</button>
+                </div>
+            </section>
+
+            <!-- View: Pinyin / Thanh Mẫu -->
+            <section id="pinyin-view" class="view-section hidden">
+                <div class="view-header">
+                    <h1>Luyện Thanh Mẫu & Vận Mẫu</h1>
+                    <p>Học cách phát âm các thanh mẫu và cấu trúc kết hợp của chúng.</p>
+                </div>
+                
+                <div class="pinyin-layout" style="display: flex; gap: 20px; flex-wrap: wrap;">
+                    <!-- Sidebar chọn thanh mẫu/vận mẫu -->
+                    <div class="pinyin-sidebar glass-panel" style="flex: 1; min-width: 250px;">
+                        <div class="pinyin-tabs" style="display: flex; gap: 10px; margin-bottom: 15px;">
+                            <button id="tab-initials" class="primary-btn" style="flex: 1; padding: 8px;">Thanh Mẫu</button>
+                            <button id="tab-finals" class="secondary-btn" style="flex: 1; padding: 8px;">Vận Mẫu</button>
+                        </div>
+                        <div id="initials-list" class="initials-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-height: 300px; overflow-y: auto; padding-right: 5px;">
+                            <!-- Populated by JS -->
+                        </div>
+                        <div id="initial-detail" class="initial-detail" style="margin-top: 20px; padding: 15px; background: rgba(var(--primary-rgb), 0.1); border-radius: 8px; border-left: 4px solid var(--primary-color);">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                                <h4 id="detail-name" style="font-size: 1.5rem; color: var(--primary-color); margin: 0;">b</h4>
+                                <button id="detail-listen-btn" class="icon-btn" style="color: var(--primary-color); padding: 5px;" title="Nghe phát âm"><i class="fa-solid fa-volume-high"></i></button>
+                            </div>
+                            <p id="detail-type" style="font-weight: bold; font-size: 0.9rem;">Âm hai môi</p>
+                            <p id="detail-note" style="margin-top: 8px; font-size: 0.95rem; line-height: 1.4;">Phát âm như chữ "p" trong tiếng Việt nhưng không bật hơi.</p>
+                        </div>
+                    </div>
+
+                    <!-- Khu vực luyện tập -->
+                    <div class="pinyin-practice glass-panel" style="flex: 2; min-width: 300px;">
+                        <h3 style="margin-bottom: 15px;">Cấu trúc kết hợp & Luyện phát âm</h3>
+                        <p class="text-hint" style="margin-bottom: 15px;">Chọn một tổ hợp âm bên dưới để nghe và luyện đọc. Hệ thống sẽ đánh giá phát âm của bạn.</p>
+                        
+                        <div id="combinations-list" class="combinations-grid" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px;">
+                            <!-- Populated by JS -->
+                        </div>
+
+                        <div id="pinyin-eval-section" class="eval-section hidden" style="text-align: center; padding: 20px; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color);">
+                            <div style="margin-bottom: 15px;">
+                                <p class="text-hint" style="margin-bottom: 10px;">Chọn thanh điệu để luyện tập:</p>
+                                <div id="tone-selector" style="display: flex; justify-content: center; gap: 10px;">
+                                    <!-- Populated by JS -->
+                                </div>
+                            </div>
+                            
+                            <h2 id="eval-target" style="font-size: 3rem; color: var(--primary-color); margin-bottom: 10px;">ba</h2>
+                            <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 20px;">
+                                <button id="pinyin-listen-btn" class="secondary-btn" style="border-radius: 50%; width: 50px; height: 50px;"><i class="fa-solid fa-volume-high"></i></button>
+                                <button id="pinyin-record-btn" class="primary-btn" style="border-radius: 50%; width: 60px; height: 60px; font-size: 1.5rem;"><i class="fa-solid fa-microphone"></i></button>
+                            </div>
+                            <p id="pinyin-eval-status" class="hint-text" style="min-height: 24px;">Bấm mic để đọc</p>
+                            
+                            <div id="pinyin-result" class="hidden" style="margin-top: 15px; padding: 10px; border-radius: 8px; font-weight: bold;">
+                                <!-- Kết quả -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- View: Manage Data -->
+            <section id="manage-view" class="view-section hidden">
+                <div class="view-header">
+                    <h1>Quản Lý Nhóm Học</h1>
+                    <p>Thêm, sửa, xóa các nhóm học và câu hỏi của bạn.</p>
+                    <div style="display: flex; gap: 12px; justify-content: center; margin-top: 16px;">
+                        <button id="export-data-btn" class="secondary-btn"><i class="fa-solid fa-download"></i> Sao lưu dữ liệu</button>
+                        <input type="file" id="import-data-file" accept=".json" style="display: none;">
+                        <button id="import-data-btn" class="secondary-btn"><i class="fa-solid fa-upload"></i> Khôi phục dữ liệu</button>
+                    </div>
+                </div>
+
+                <div class="manage-layout">
+                    <div class="groups-sidebar glass-panel">
+                        <div class="sidebar-header">
+                            <h3>Lớp học & Nhóm học</h3>
+                            <div class="header-actions" style="display: flex; gap: 8px;">
+                                <button id="add-class-btn" class="icon-btn" title="Thêm Lớp học"><i class="fa-solid fa-folder-plus"></i></button>
+                                <button id="add-group-btn" class="icon-btn" title="Thêm Nhóm học"><i class="fa-solid fa-file-circle-plus"></i></button>
+                            </div>
+                        </div>
+                        <ul id="groups-list" class="groups-list">
+                            <!-- Populated by JS -->
+                        </ul>
+                    </div>
+
+                    <div class="group-editor glass-panel">
+                        <div id="no-group-selected" class="empty-state">
+                            <i class="fa-solid fa-object-group"></i>
+                            <p>Chọn một nhóm học để chỉnh sửa hoặc tạo nhóm mới</p>
+                        </div>
+
+                        <div id="group-editor-content" class="hidden">
+                            <div class="editor-header" style="display: flex; flex-direction: column; gap: 12px;">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <select id="edit-group-class" class="premium-select" style="flex: 1; margin: 0; padding: 12px; height: 50px; font-weight: bold; background-color: var(--card-bg);"></select>
+                                    <button id="delete-group-btn" class="danger-btn" title="Xóa nhóm này" style="height: 50px;"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                                <input type="text" id="edit-group-name" class="premium-input title-input" placeholder="Tên nhóm học (VD: Bài 1 - Xin chào)">
+                            </div>
+
+                            <div class="sentences-manager">
+                                <div class="sentences-header">
+                                    <h4>Danh sách câu hỏi (<span id="sentence-count">0</span>)</h4>
+                                    <button id="batch-import-btn" class="secondary-btn"><i class="fa-solid fa-list"></i> Thêm hàng loạt</button>
+                                </div>
+                                
+                                <div id="sentences-list" class="sentences-list">
+                                    <!-- Populated by JS -->
+                                </div>
+
+                                <div id="batch-import-card" class="add-sentence-card hidden" style="background: rgba(245, 158, 11, 0.05); border-color: var(--primary-color); margin-top: 16px;">
+                                    <h4>Nhập hàng loạt</h4>
+                                    <p class="text-hint" style="margin-bottom: 8px;">Mỗi dòng một từ/câu. Định dạng: <code>Chữ Hán - Tiếng Việt</code> hoặc chỉ <code>Chữ Hán</code>. (App sẽ tự điền ngữ pháp & pinyin)</p>
+                                    <textarea id="batch-import-text" class="premium-input" rows="6" placeholder="Ví dụ:&#10;你好 - Xin chào&#10;谢谢 - Cảm ơn"></textarea>
+                                    <div style="display: flex; gap: 12px; margin-top: 12px;">
+                                        <button id="process-batch-btn" class="primary-btn" style="flex: 1;">Xử lý & Thêm</button>
+                                        <button id="cancel-batch-btn" class="secondary-btn">Hủy</button>
+                                    </div>
+                                </div>
+
+                                <div class="add-sentence-card" style="margin-top: 16px;">
+                                    <h4>Thêm câu mới</h4>
+                                    <div class="input-grid">
+                                        <div class="input-group">
+                                            <label>Tiếng Việt</label>
+                                            <input type="text" id="new-sentence-vi" class="premium-input" placeholder="VD: Xin chào">
+                                        </div>
+                                        <div class="input-group">
+                                            <label>Chữ Hán</label>
+                                            <div style="display: flex; gap: 8px;">
+                                                <input type="text" id="new-sentence-zh" class="premium-input" placeholder="VD: 你好">
+                                                <button id="auto-fetch-btn" class="secondary-btn" title="Tự động tra cứu qua mạng"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
+                                            </div>
+                                        </div>
+                                        <div class="input-group">
+                                            <label>Pinyin (Tùy chọn)</label>
+                                            <input type="text" id="new-sentence-pinyin" class="premium-input" placeholder="VD: nǐ hǎo">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="input-grid mt-3">
+                                        <h5 style="margin-bottom: 8px; color: var(--primary-color);">Phần Phân Tích Chi Tiết (Tùy chọn)</h5>
+                                        <div class="input-group">
+                                            <label>Nghĩa chi tiết</label>
+                                            <input type="text" id="new-sentence-meaning" class="premium-input" placeholder="VD: Xin chào (dùng để chào hỏi cơ bản)">
+                                        </div>
+                                        <div class="input-group">
+                                            <label>Ví dụ (Chữ Hán)</label>
+                                            <input type="text" id="new-sentence-ex-zh" class="premium-input" placeholder="VD: 你们好！">
+                                        </div>
+                                        <div class="input-group">
+                                            <label>Ví dụ (Pinyin + Nghĩa)</label>
+                                            <input type="text" id="new-sentence-ex-vi" class="premium-input" placeholder="VD: nǐmen hǎo! - Chào các bạn!">
+                                        </div>
+                                        <div class="input-group">
+                                            <label>Cấu trúc</label>
+                                            <input type="text" id="new-sentence-structure" class="premium-input" placeholder="VD: Đại từ + 好">
+                                        </div>
+                                        <div class="input-group">
+                                            <label>Nghĩa cấu trúc</label>
+                                            <input type="text" id="new-sentence-struct-vi" class="premium-input" placeholder="VD: Chào ai đó">
+                                        </div>
+                                        <div class="input-group">
+                                            <label>Ngữ pháp</label>
+                                            <textarea id="new-sentence-grammar" class="premium-input" placeholder="VD: Giải thích ngữ pháp..."></textarea>
+                                        </div>
+                                        <div class="input-group">
+                                            <label>Ghi chú</label>
+                                            <textarea id="new-sentence-note" class="premium-input" placeholder="VD: Dùng trong mọi ngữ cảnh..."></textarea>
+                                        </div>
+                                    </div>
+                                    
+                                    <button id="add-sentence-btn" class="primary-btn mt-3 full-width"><i class="fa-solid fa-plus"></i> Thêm vào nhóm</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="./js/grammar_db.js?v=4"></script>
+    <script src="./js/pinyin_data.js"></script>
+    <script src="./js/data.js"></script>
+    <script src="./js/app.js"></script>
+</body>
+</html>
