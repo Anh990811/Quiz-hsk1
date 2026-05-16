@@ -551,36 +551,55 @@ function bindEvents() {
                 return;
             }
 
-            const blocks = text.split(/\n\s*\n/);
-            let addedCount = 0;
-            
-            for (let block of blocks) {
-                const lines = block.split('\n').map(l => l.trim()).filter(l => l);
-                if (lines.length < 2) continue;
+            // Helper: check if a line is Chinese (Hanzi)
+            const isChineseLine = (line) => /[\u4e00-\u9fa5]/.test(line);
+            // Helper: check if a line is Pinyin (latin + tone marks, possibly in parens)
+            const isPinyinLine = (line) => {
+                const stripped = line.replace(/^\(|\)$/g, '').trim();
+                return /^[a-zA-Zāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜü\s0-9.,?!'"\u2018\u2019\u201c\u201d-]+$/.test(stripped) && stripped.length > 0;
+            };
 
-                let zhLine = lines[0];
+            const allLines = text.split('\n').map(l => l.trim()).filter(l => l);
+            let addedCount = 0;
+            let i = 0;
+
+            while (i < allLines.length) {
+                const line1 = allLines[i];
+
+                // Line 1 must contain Chinese characters (possibly with A: / B: prefix)
+                if (!isChineseLine(line1)) {
+                    i++;
+                    continue;
+                }
+
+                let zhLine = line1.replace(/^[A-Za-z０-９\d]+\s*[:：]\s*/, '').trim();
                 let pinyinLine = '';
                 let viLine = '';
-                
-                if (lines.length >= 3) {
-                    pinyinLine = lines[1];
-                    viLine = lines.slice(2).join(' ');
-                } else if (lines.length === 2) {
-                    if (lines[1].match(/^[a-zA-Zāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜü0-9\s.,?!()'""-]+$/i)) {
-                        pinyinLine = lines[1];
+
+                // Look ahead for pinyin on next line
+                if (i + 1 < allLines.length && isPinyinLine(allLines[i + 1])) {
+                    pinyinLine = allLines[i + 1].replace(/^\(|\)$/g, '').trim();
+                    // Look ahead for Vietnamese on the line after pinyin
+                    if (i + 2 < allLines.length && !isChineseLine(allLines[i + 2])) {
+                        viLine = allLines[i + 2];
+                        i += 3;
                     } else {
-                        viLine = lines[1];
+                        i += 2;
                     }
+                } else if (i + 1 < allLines.length && !isChineseLine(allLines[i + 1])) {
+                    // No pinyin line, next line is Vietnamese
+                    viLine = allLines[i + 1];
+                    i += 2;
+                } else {
+                    // Only Chinese line, no translation
+                    i += 1;
                 }
-                
-                pinyinLine = pinyinLine.replace(/^\(|\)$/g, '').trim();
 
                 if (!zhLine) continue;
 
-                const cleanZhForMatch = zhLine.replace(/^[A-Za-z]+\s*:\s*/, '');
                 let structure = '', structVi = '', grammar = '', note = '', exZh = '', exVi = '';
                 
-                const exactMatch = findExactSentenceMatch(cleanZhForMatch);
+                const exactMatch = findExactSentenceMatch(zhLine);
                 if (exactMatch) {
                     if (!pinyinLine) pinyinLine = exactMatch.example.pinyin;
                     structure = exactMatch.rule.structure;
@@ -591,7 +610,7 @@ function bindEvents() {
                     exVi = exactMatch.example.pinyin + " - " + exactMatch.example.en;
                     if (!viLine) viLine = exactMatch.example.en;
                 } else {
-                    const gMatch = findGrammarMatch(cleanZhForMatch);
+                    const gMatch = findGrammarMatch(zhLine);
                     if (gMatch) {
                         structure = gMatch.structure || '';
                         structVi = gMatch.desc || '';
@@ -614,11 +633,15 @@ function bindEvents() {
                 addedCount++;
             }
             
-            alert(`Đã thêm thành công ${addedCount} câu hội thoại!`);
-            quickConvCard.classList.add('hidden');
-            quickConvText.value = '';
-            renderSentences();
-            renderSetupClasses();
+            if (addedCount === 0) {
+                alert("Không tìm thấy câu hợp lệ nào. Hãy đảm bảo dòng đầu tiên của mỗi câu có chứa chữ Hán.");
+            } else {
+                alert(`Đã thêm thành công ${addedCount} câu hội thoại!`);
+                quickConvCard.classList.add('hidden');
+                quickConvText.value = '';
+                renderSentences();
+                renderSetupClasses();
+            }
         });
     }
 
