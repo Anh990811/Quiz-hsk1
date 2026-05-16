@@ -319,6 +319,7 @@
                                 <div class="sentences-header">
                                     <h4>Danh sách câu hỏi (<span id="sentence-count">0</span>)</h4>
                                     <button id="batch-import-btn" class="secondary-btn"><i class="fa-solid fa-list"></i> Thêm hàng loạt</button>
+                                    <button id="quick-conversation-btn" class="secondary-btn" style="margin-left: 8px;"><i class="fa-solid fa-comments"></i> Thêm nhanh hội thoại</button>
                                 </div>
                                 
                                 <div id="sentences-list" class="sentences-list">
@@ -332,6 +333,16 @@
                                     <div style="display: flex; gap: 12px; margin-top: 12px;">
                                         <button id="process-batch-btn" class="primary-btn" style="flex: 1;">Xử lý & Thêm</button>
                                         <button id="cancel-batch-btn" class="secondary-btn">Hủy</button>
+                                    </div>
+                                </div>
+
+                                <div id="quick-conversation-card" class="add-sentence-card hidden" style="background: rgba(14, 165, 233, 0.05); border-color: #0ea5e9; margin-top: 16px;">
+                                    <h4>Thêm nhanh hội thoại</h4>
+                                    <p class="text-hint" style="margin-bottom: 8px;">Dán trực tiếp đoạn hội thoại. Định dạng: <code>Người nói: Câu tiếng Trung \n (Pinyin) \n Tiếng Việt</code> hoặc tương tự (3 dòng cho 1 câu).</p>
+                                    <textarea id="quick-conversation-text" class="premium-input" rows="8" placeholder="Ví dụ:&#10;A: 你很少生病，是不是喜欢运动？&#10;(Nǐ hěn shǎo shēng bìng, shì bu shì xǐhuān yùndòng?)&#10;Bạn rất ít khi bị ốm, có phải là thích tập thể dục không?&#10;&#10;B: 是啊，我每天早上六点起床。&#10;(Shì a, wǒ měitiān zǎoshang liù diǎn qǐchuáng.)&#10;Đúng vậy, mỗi sáng mình đều thức dậy lúc 6 giờ."></textarea>
+                                    <div style="display: flex; gap: 12px; margin-top: 12px;">
+                                        <button id="process-conversation-btn" class="primary-btn" style="flex: 1;">Xử lý & Thêm Hội Thoại</button>
+                                        <button id="cancel-conversation-btn" class="secondary-btn">Hủy</button>
                                     </div>
                                 </div>
 
