@@ -1083,6 +1083,9 @@ function endSession() {
 }
 
 // ==================== MANAGE VIEW ====================
+// Track which classes are collapsed (by class id)
+const collapsedClasses = new Set();
+
 function renderManageGroups() {
     const classes = appData.getClasses();
     const groups = appData.getGroups();
@@ -1090,24 +1093,67 @@ function renderManageGroups() {
     let html = '';
     classes.forEach(c => {
         const classGroups = groups.filter(g => g.classId === c.id);
-        html += `<div class="class-header" style="font-weight:bold; margin-top: 10px; margin-bottom: 4px; color: var(--primary-color); display: flex; justify-content: space-between; align-items: center; padding: 4px 8px; border-radius: 4px; background: rgba(0,0,0,0.02);">
-                    <span><i class="fa-solid fa-folder-open" style="margin-right: 6px;"></i> ${c.name}</span>
-                    <button class="icon-btn edit-class-btn" data-id="${c.id}" style="width:24px; height:24px; font-size:12px;" title="Sửa tên Lớp học"><i class="fa-solid fa-pen"></i></button>
-                 </div>`;
+        const isCollapsed = collapsedClasses.has(c.id);
+        const chevronStyle = isCollapsed ? 'transform: rotate(-90deg);' : 'transform: rotate(0deg);';
+        
+        html += `
+        <div class="class-section">
+            <div class="class-header" style="
+                font-weight: bold;
+                margin-top: 10px;
+                margin-bottom: 4px;
+                color: var(--primary-color);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 6px 8px;
+                border-radius: 6px;
+                background: rgba(var(--primary-rgb, 245,158,11), 0.08);
+                cursor: pointer;
+                user-select: none;
+            ">
+                <span class="class-toggle-btn" data-class-id="${c.id}" style="display:flex; align-items:center; gap:6px; flex:1;">
+                    <i class="fa-solid fa-chevron-down" style="font-size:0.75rem; transition: transform 0.2s; ${chevronStyle}"></i>
+                    <i class="fa-solid fa-folder${isCollapsed ? '' : '-open'}"></i>
+                    ${c.name}
+                    <span style="font-size:0.8em; font-weight:400; opacity:0.7;">(${classGroups.length} nhóm)</span>
+                </span>
+                <button class="icon-btn edit-class-btn" data-id="${c.id}" style="width:24px; height:24px; font-size:12px; flex-shrink:0;" title="Sửa tên Lớp học">
+                    <i class="fa-solid fa-pen"></i>
+                </button>
+            </div>
+            <div class="class-groups-container" id="class-groups-${c.id}" style="overflow:hidden; transition: max-height 0.25s ease; ${isCollapsed ? 'display:none;' : ''}">`;
+        
         if (classGroups.length === 0) {
             html += `<div class="text-hint" style="padding: 4px 16px 12px 28px; font-size: 0.85rem;">Chưa có nhóm học</div>`;
         } else {
-            html += `<ul style="list-style:none; padding-left:0; margin-bottom: 12px;">`;
+            html += `<ul style="list-style:none; padding-left:0; margin-bottom: 8px;">`;
             classGroups.forEach(g => {
-                html += `<li class="group-item ${g.id === selectedManageGroupId ? 'active' : ''}" data-id="${g.id}" style="margin-left: 12px; margin-bottom: 2px;">
+                html += `<li class="group-item ${g.id === selectedManageGroupId ? 'active' : ''}" data-id="${g.id}" style="margin-left: 12px; margin-bottom: 2px; padding: 6px 10px; border-radius:5px; cursor:pointer;">
                     ${g.name} <span class="badge" style="background:var(--border-color); padding: 2px 6px; border-radius: 10px; font-size: 0.8em; margin-left: 8px;">${g.sentences.length} câu</span>
                 </li>`;
             });
             html += `</ul>`;
         }
+
+        html += `</div></div>`;
     });
 
     DOM.groupsList.innerHTML = html;
+
+    // Bind click for toggle collapse
+    document.querySelectorAll('.class-toggle-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const classId = btn.getAttribute('data-class-id');
+            if (collapsedClasses.has(classId)) {
+                collapsedClasses.delete(classId);
+            } else {
+                collapsedClasses.add(classId);
+            }
+            renderManageGroups();
+        });
+    });
 
     // Bind click for groups
     document.querySelectorAll('.group-item').forEach(li => {
