@@ -527,6 +527,101 @@ function bindEvents() {
         });
     }
 
+    // Quick Conversation Import
+    const quickConvBtn = document.getElementById('quick-conversation-btn');
+    const quickConvCard = document.getElementById('quick-conversation-card');
+    const processConvBtn = document.getElementById('process-conversation-btn');
+    const cancelConvBtn = document.getElementById('cancel-conversation-btn');
+    const quickConvText = document.getElementById('quick-conversation-text');
+
+    if (quickConvBtn) {
+        quickConvBtn.addEventListener('click', () => {
+            quickConvCard.classList.remove('hidden');
+        });
+        cancelConvBtn.addEventListener('click', () => {
+            quickConvCard.classList.add('hidden');
+            quickConvText.value = '';
+        });
+        processConvBtn.addEventListener('click', () => {
+            const text = quickConvText.value.trim();
+            if (!text) return;
+            
+            if (!selectedManageGroupId) {
+                alert("Vui lòng chọn nhóm học!");
+                return;
+            }
+
+            const blocks = text.split(/\n\s*\n/);
+            let addedCount = 0;
+            
+            for (let block of blocks) {
+                const lines = block.split('\n').map(l => l.trim()).filter(l => l);
+                if (lines.length < 2) continue;
+
+                let zhLine = lines[0];
+                let pinyinLine = '';
+                let viLine = '';
+                
+                if (lines.length >= 3) {
+                    pinyinLine = lines[1];
+                    viLine = lines.slice(2).join(' ');
+                } else if (lines.length === 2) {
+                    if (lines[1].match(/^[a-zA-Zāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜü0-9\s.,?!()'""-]+$/i)) {
+                        pinyinLine = lines[1];
+                    } else {
+                        viLine = lines[1];
+                    }
+                }
+                
+                pinyinLine = pinyinLine.replace(/^\(|\)$/g, '').trim();
+
+                if (!zhLine) continue;
+
+                const cleanZhForMatch = zhLine.replace(/^[A-Za-z]+\s*:\s*/, '');
+                let structure = '', structVi = '', grammar = '', note = '', exZh = '', exVi = '';
+                
+                const exactMatch = findExactSentenceMatch(cleanZhForMatch);
+                if (exactMatch) {
+                    if (!pinyinLine) pinyinLine = exactMatch.example.pinyin;
+                    structure = exactMatch.rule.structure;
+                    structVi = exactMatch.rule.desc;
+                    grammar = `[${exactMatch.rule.id}] ${exactMatch.rule.desc}`;
+                    note = `Tags: ${exactMatch.rule.tags}`;
+                    exZh = exactMatch.example.zh;
+                    exVi = exactMatch.example.pinyin + " - " + exactMatch.example.en;
+                    if (!viLine) viLine = exactMatch.example.en;
+                } else {
+                    const gMatch = findGrammarMatch(cleanZhForMatch);
+                    if (gMatch) {
+                        structure = gMatch.structure || '';
+                        structVi = gMatch.desc || '';
+                        grammar = `[${gMatch.id}] ${gMatch.desc || ''}`;
+                        note = `Tags: ${gMatch.tags || ''}`;
+                    }
+                }
+
+                appData.addSentence(selectedManageGroupId, {
+                    zh: zhLine, 
+                    vi: viLine, 
+                    pinyin: pinyinLine, 
+                    structure, 
+                    structVi, 
+                    grammar, 
+                    note, 
+                    exZh, 
+                    exVi
+                });
+                addedCount++;
+            }
+            
+            alert(`Đã thêm thành công ${addedCount} câu hội thoại!`);
+            quickConvCard.classList.add('hidden');
+            quickConvText.value = '';
+            renderSentences();
+            renderSetupClasses();
+        });
+    }
+
     // Speech Recognition
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     let recognition = null;
