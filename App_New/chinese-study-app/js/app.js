@@ -1215,12 +1215,67 @@ function renderSentences() {
     }
 
     DOM.sentencesList.innerHTML = group.sentences.map(s => `
-        <div class="sentence-card">
+        <div class="sentence-card" id="scard-${s.id}">
             <div class="sentence-content">
                 <div class="zh">${s.zh} ${s.pinyin ? `<span style="font-size:0.8em;color:var(--text-secondary)">(${s.pinyin})</span>` : ''}</div>
                 <div class="vi">${s.vi}</div>
             </div>
-            <button class="danger-btn delete-sentence-btn" data-id="${s.id}"><i class="fa-solid fa-trash"></i></button>
+            <div style="display:flex; gap:6px; flex-shrink:0;">
+                <button class="icon-btn edit-sentence-btn" data-id="${s.id}" title="Chỉnh sửa" style="color:var(--primary-color);"><i class="fa-solid fa-pen"></i></button>
+                <button class="danger-btn delete-sentence-btn" data-id="${s.id}" style="padding:6px 10px;"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        </div>
+        <div class="sentence-edit-form hidden" id="sedit-${s.id}" style="
+            background: rgba(var(--primary-rgb,245,158,11),0.05);
+            border: 1px solid var(--primary-color);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 10px;
+            display: none;
+        ">
+            <h5 style="margin:0 0 12px; color:var(--primary-color);">✏️ Chỉnh sửa câu</h5>
+            <div class="input-grid" style="gap:10px;">
+                <div class="input-group">
+                    <label>Chữ Hán</label>
+                    <input type="text" class="premium-input sedit-zh" data-id="${s.id}" value="${(s.zh||'').replace(/"/g,'&quot;')}">
+                </div>
+                <div class="input-group">
+                    <label>Pinyin</label>
+                    <input type="text" class="premium-input sedit-pinyin" data-id="${s.id}" value="${(s.pinyin||'').replace(/"/g,'&quot;')}">
+                </div>
+                <div class="input-group">
+                    <label>Tiếng Việt</label>
+                    <input type="text" class="premium-input sedit-vi" data-id="${s.id}" value="${(s.vi||'').replace(/"/g,'&quot;')}">
+                </div>
+                <div class="input-group">
+                    <label>Nghĩa chi tiết</label>
+                    <input type="text" class="premium-input sedit-meaning" data-id="${s.id}" value="${(s.meaningDetail||'').replace(/"/g,'&quot;')}">
+                </div>
+                <div class="input-group">
+                    <label>Ví dụ (Chữ Hán)</label>
+                    <input type="text" class="premium-input sedit-exzh" data-id="${s.id}" value="${(s.exZh||'').replace(/"/g,'&quot;')}">
+                </div>
+                <div class="input-group">
+                    <label>Ví dụ (Pinyin + Nghĩa)</label>
+                    <input type="text" class="premium-input sedit-exvi" data-id="${s.id}" value="${(s.exVi||'').replace(/"/g,'&quot;')}">
+                </div>
+                <div class="input-group">
+                    <label>Cấu trúc</label>
+                    <input type="text" class="premium-input sedit-structure" data-id="${s.id}" value="${(s.structure||'').replace(/"/g,'&quot;')}">
+                </div>
+                <div class="input-group">
+                    <label>Ngữ pháp</label>
+                    <textarea class="premium-input sedit-grammar" data-id="${s.id}" rows="2">${s.grammar||''}</textarea>
+                </div>
+                <div class="input-group">
+                    <label>Ghi chú</label>
+                    <textarea class="premium-input sedit-note" data-id="${s.id}" rows="2">${s.note||''}</textarea>
+                </div>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:12px;">
+                <button class="primary-btn save-sentence-btn" data-id="${s.id}" style="flex:1;"><i class="fa-solid fa-check"></i> Lưu</button>
+                <button class="secondary-btn cancel-edit-btn" data-id="${s.id}">Hủy</button>
+            </div>
         </div>
     `).join('');
 
@@ -1231,8 +1286,53 @@ function renderSentences() {
             if (confirm("Xóa câu này?")) {
                 appData.deleteSentence(selectedManageGroupId, id);
                 renderSentences();
-                renderSetupClasses(); // Update dropdown count
+                renderSetupClasses();
             }
+        });
+    });
+
+    // Bind edit toggle
+    document.querySelectorAll('.edit-sentence-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const id = e.currentTarget.getAttribute('data-id');
+            const editForm = document.getElementById(`sedit-${id}`);
+            const isHidden = editForm.style.display === 'none' || editForm.style.display === '';
+            // Close all other open forms
+            document.querySelectorAll('.sentence-edit-form').forEach(f => { f.style.display = 'none'; });
+            editForm.style.display = isHidden ? 'block' : 'none';
+        });
+    });
+
+    // Bind save
+    document.querySelectorAll('.save-sentence-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const id = e.currentTarget.getAttribute('data-id');
+            const form = document.getElementById(`sedit-${id}`);
+            const group = appData.getGroup(selectedManageGroupId);
+            const sentence = group.sentences.find(s => s.id === id);
+            if (!sentence) return;
+
+            sentence.zh          = form.querySelector('.sedit-zh').value.trim();
+            sentence.pinyin      = form.querySelector('.sedit-pinyin').value.trim();
+            sentence.vi          = form.querySelector('.sedit-vi').value.trim();
+            sentence.meaningDetail = form.querySelector('.sedit-meaning').value.trim();
+            sentence.exZh        = form.querySelector('.sedit-exzh').value.trim();
+            sentence.exVi        = form.querySelector('.sedit-exvi').value.trim();
+            sentence.structure   = form.querySelector('.sedit-structure').value.trim();
+            sentence.grammar     = form.querySelector('.sedit-grammar').value.trim();
+            sentence.note        = form.querySelector('.sedit-note').value.trim();
+
+            appData.saveData();
+            renderSentences();
+            renderSetupClasses();
+        });
+    });
+
+    // Bind cancel
+    document.querySelectorAll('.cancel-edit-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const id = e.currentTarget.getAttribute('data-id');
+            document.getElementById(`sedit-${id}`).style.display = 'none';
         });
     });
 }
