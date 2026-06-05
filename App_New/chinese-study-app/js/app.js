@@ -21,6 +21,8 @@ const DOM = {
     progressFill: document.getElementById('progress-fill'),
     questionPagination: document.getElementById('question-pagination'),
     playAudioBtn: document.getElementById('play-audio-btn'),
+    audioControlsWrapper: document.getElementById('audio-controls-wrapper'),
+    audioSpeed: document.getElementById('audio-speed'),
     questionText: document.getElementById('question-text'),
     questionHint: document.getElementById('question-hint'),
     answerInput: document.getElementById('answer-input'),
@@ -507,9 +509,15 @@ if ('speechSynthesis' in window) {
 function playAudioText(text) {
     if (!text) return;
     
+    let speed = 1.0;
+    if (DOM.audioSpeed) {
+        speed = parseFloat(DOM.audioSpeed.value) || 1.0;
+    }
+    
     // Ưu tiên dùng Google TTS để phát âm chuẩn xác cả Pinyin và Hán tự
     const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=zh-CN&client=tw-ob`;
     const audio = new Audio(url);
+    audio.playbackRate = speed;
     
     audio.play().catch(e => {
         console.log("Google TTS failed, falling back to Web Speech API", e);
@@ -517,6 +525,7 @@ function playAudioText(text) {
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = speed;
             utterance.lang = 'zh-CN';
             if (sysVoices.length === 0) sysVoices = window.speechSynthesis.getVoices();
             const zhVoice = sysVoices.find(v => v.lang === 'zh-CN' || v.lang.includes('zh') || v.lang.includes('cmn'));
@@ -652,7 +661,7 @@ function showQuestion() {
     updatePagination();
 
     // Setup Question Content based on mode
-    DOM.playAudioBtn.classList.add('hidden');
+    DOM.audioControlsWrapper.classList.add('hidden');
     DOM.questionText.classList.remove('hidden');
     if(DOM.answerInput) DOM.answerInput.classList.remove('hidden');
     if(DOM.speechContainer) DOM.speechContainer.classList.add('hidden');
@@ -673,7 +682,7 @@ function showQuestion() {
         case 'listen-vi':
             DOM.questionText.textContent = "🎧 Nghe và dịch";
             DOM.questionHint.textContent = "Nghe tiếng Trung, viết nghĩa tiếng Việt";
-            DOM.playAudioBtn.classList.remove('hidden');
+            DOM.audioControlsWrapper.classList.remove('hidden');
             setTimeout(playCurrentAudio, 300); // Auto play
             break;
         case 'speak-zh':
