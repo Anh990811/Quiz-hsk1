@@ -115,7 +115,14 @@
 
                 <div class="question-container glass-panel">
                     <div class="question-content">
-                        <button class="play-audio-btn hidden" id="play-audio-btn"><i class="fa-solid fa-volume-high"></i></button>
+                        <div id="audio-controls-wrapper" class="hidden" style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 24px;">
+                            <button class="play-audio-btn" id="play-audio-btn" style="margin: 0;"><i class="fa-solid fa-volume-high"></i></button>
+                            <select id="audio-speed" class="premium-select" style="padding: 4px 10px; border-radius: 20px; font-size: 0.9rem; height: 38px; width: auto; min-width: unset; margin: 0; background: var(--card-bg); cursor: pointer;" title="Tốc độ đọc">
+                                <option value="1">1.0x</option>
+                                <option value="0.75">0.75x</option>
+                                <option value="0.5">0.5x</option>
+                            </select>
+                        </div>
                         <h3 id="question-text">Anh cảm thấy khi nào đi Trung Quốc du lịch là tốt nhất?</h3>
                         <p id="question-hint" class="text-hint">Dịch sang tiếng Trung</p>
                     </div>
@@ -319,87 +326,22 @@
                                 <div class="sentences-header">
                                     <h4>Danh sách câu hỏi (<span id="sentence-count">0</span>)</h4>
                                     <button id="batch-import-btn" class="secondary-btn"><i class="fa-solid fa-list"></i> Thêm hàng loạt</button>
-                                    <button id="quick-conversation-btn" class="secondary-btn" style="margin-left: 8px;"><i class="fa-solid fa-comments"></i> Thêm nhanh hội thoại</button>
                                 </div>
                                 
-                                <div id="sentences-list" class="sentences-list">
-                                    <!-- Populated by JS -->
-                                </div>
-
-                                <div id="batch-import-card" class="add-sentence-card hidden" style="background: rgba(245, 158, 11, 0.05); border-color: var(--primary-color); margin-top: 16px;">
+                                <div id="batch-import-card" class="add-sentence-card hidden" style="background: rgba(245, 158, 11, 0.05); border-color: var(--primary-color); margin-bottom: 16px;">
                                     <h4>Nhập hàng loạt</h4>
-                                    <p class="text-hint" style="margin-bottom: 8px;">Mỗi dòng một từ/câu. Định dạng: <code>Chữ Hán - Tiếng Việt</code> hoặc chỉ <code>Chữ Hán</code>. (App sẽ tự điền ngữ pháp & pinyin)</p>
-                                    <textarea id="batch-import-text" class="premium-input" rows="6" placeholder="Ví dụ:&#10;你好 - Xin chào&#10;谢谢 - Cảm ơn"></textarea>
+                                    <p class="text-hint" style="margin-bottom: 8px;">Mỗi dòng một từ/câu. Định dạng: <code>Chữ Hán - Tiếng Việt - Pinyin</code> hoặc <code>Chữ Hán - Tiếng Việt</code> hoặc chỉ <code>Chữ Hán</code>. (App sẽ tự điền ngữ pháp, pinyin nếu để trống)</p>
+                                    <textarea id="batch-import-text" class="premium-input" rows="6" placeholder="Ví dụ:&#10;你好 - Xin chào - nǐ hǎo&#10;谢谢 - Cảm ơn - xièxie&#10;我爱你 - Tôi yêu bạn"></textarea>
                                     <div style="display: flex; gap: 12px; margin-top: 12px;">
                                         <button id="process-batch-btn" class="primary-btn" style="flex: 1;">Xử lý & Thêm</button>
                                         <button id="cancel-batch-btn" class="secondary-btn">Hủy</button>
                                     </div>
                                 </div>
 
-                                <div id="quick-conversation-card" class="add-sentence-card hidden" style="background: rgba(14, 165, 233, 0.05); border-color: #0ea5e9; margin-top: 16px;">
-                                    <h4>Thêm nhanh hội thoại</h4>
-                                    <p class="text-hint" style="margin-bottom: 8px;">Dán trực tiếp đoạn hội thoại. Định dạng: <code>Người nói: Câu tiếng Trung \n (Pinyin) \n Tiếng Việt</code> hoặc tương tự (3 dòng cho 1 câu).</p>
-                                    <textarea id="quick-conversation-text" class="premium-input" rows="8" placeholder="Ví dụ:&#10;A: 你很少生病，是不是喜欢运动？&#10;(Nǐ hěn shǎo shēng bìng, shì bu shì xǐhuān yùndòng?)&#10;Bạn rất ít khi bị ốm, có phải là thích tập thể dục không?&#10;&#10;B: 是啊，我每天早上六点起床。&#10;(Shì a, wǒ měitiān zǎoshang liù diǎn qǐchuáng.)&#10;Đúng vậy, mỗi sáng mình đều thức dậy lúc 6 giờ."></textarea>
-                                    <div style="display: flex; gap: 12px; margin-top: 12px;">
-                                        <button id="process-conversation-btn" class="primary-btn" style="flex: 1;">Xử lý & Thêm Hội Thoại</button>
-                                        <button id="cancel-conversation-btn" class="secondary-btn">Hủy</button>
-                                    </div>
+                                <div id="sentences-list" class="sentences-list">
+                                    <!-- Populated by JS -->
                                 </div>
 
-                                <div class="add-sentence-card" style="margin-top: 16px;">
-                                    <h4>Thêm câu mới</h4>
-                                    <div class="input-grid">
-                                        <div class="input-group">
-                                            <label>Tiếng Việt</label>
-                                            <input type="text" id="new-sentence-vi" class="premium-input" placeholder="VD: Xin chào">
-                                        </div>
-                                        <div class="input-group">
-                                            <label>Chữ Hán</label>
-                                            <div style="display: flex; gap: 8px;">
-                                                <input type="text" id="new-sentence-zh" class="premium-input" placeholder="VD: 你好">
-                                                <button id="auto-fetch-btn" class="secondary-btn" title="Tự động tra cứu qua mạng"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
-                                            </div>
-                                        </div>
-                                        <div class="input-group">
-                                            <label>Pinyin (Tùy chọn)</label>
-                                            <input type="text" id="new-sentence-pinyin" class="premium-input" placeholder="VD: nǐ hǎo">
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="input-grid mt-3">
-                                        <h5 style="margin-bottom: 8px; color: var(--primary-color);">Phần Phân Tích Chi Tiết (Tùy chọn)</h5>
-                                        <div class="input-group">
-                                            <label>Nghĩa chi tiết</label>
-                                            <input type="text" id="new-sentence-meaning" class="premium-input" placeholder="VD: Xin chào (dùng để chào hỏi cơ bản)">
-                                        </div>
-                                        <div class="input-group">
-                                            <label>Ví dụ (Chữ Hán)</label>
-                                            <input type="text" id="new-sentence-ex-zh" class="premium-input" placeholder="VD: 你们好！">
-                                        </div>
-                                        <div class="input-group">
-                                            <label>Ví dụ (Pinyin + Nghĩa)</label>
-                                            <input type="text" id="new-sentence-ex-vi" class="premium-input" placeholder="VD: nǐmen hǎo! - Chào các bạn!">
-                                        </div>
-                                        <div class="input-group">
-                                            <label>Cấu trúc</label>
-                                            <input type="text" id="new-sentence-structure" class="premium-input" placeholder="VD: Đại từ + 好">
-                                        </div>
-                                        <div class="input-group">
-                                            <label>Nghĩa cấu trúc</label>
-                                            <input type="text" id="new-sentence-struct-vi" class="premium-input" placeholder="VD: Chào ai đó">
-                                        </div>
-                                        <div class="input-group">
-                                            <label>Ngữ pháp</label>
-                                            <textarea id="new-sentence-grammar" class="premium-input" placeholder="VD: Giải thích ngữ pháp..."></textarea>
-                                        </div>
-                                        <div class="input-group">
-                                            <label>Ghi chú</label>
-                                            <textarea id="new-sentence-note" class="premium-input" placeholder="VD: Dùng trong mọi ngữ cảnh..."></textarea>
-                                        </div>
-                                    </div>
-                                    
-                                    <button id="add-sentence-btn" class="primary-btn mt-3 full-width"><i class="fa-solid fa-plus"></i> Thêm vào nhóm</button>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -412,6 +354,6 @@
     <script src="./js/grammar_db.js?v=4"></script>
     <script src="./js/pinyin_data.js"></script>
     <script src="./js/data.js"></script>
-    <script src="./js/app.js?v=9"></script>
+    <script src="./js/app.js?v=10"></script>
 </body>
 </html>
