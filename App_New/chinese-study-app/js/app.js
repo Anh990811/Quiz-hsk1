@@ -71,19 +71,6 @@ const DOM = {
     sentencesList: document.getElementById('sentences-list'),
     sentenceCount: document.getElementById('sentence-count'),
     
-    // Add sentence
-    newVi: document.getElementById('new-sentence-vi'),
-    newZh: document.getElementById('new-sentence-zh'),
-    newPinyin: document.getElementById('new-sentence-pinyin'),
-    newMeaning: document.getElementById('new-sentence-meaning'),
-    newExZh: document.getElementById('new-sentence-ex-zh'),
-    newExVi: document.getElementById('new-sentence-ex-vi'),
-    newStructure: document.getElementById('new-sentence-structure'),
-    newStructVi: document.getElementById('new-sentence-struct-vi'),
-    newGrammar: document.getElementById('new-sentence-grammar'),
-    newNote: document.getElementById('new-sentence-note'),
-    addSentenceBtn: document.getElementById('add-sentence-btn'),
-    autoFetchBtn: document.getElementById('auto-fetch-btn'),
     // New features
     speechContainer: document.getElementById('speech-container'),
     startRecordBtn: document.getElementById('start-record-btn'),
@@ -249,156 +236,6 @@ function bindEvents() {
         }
     });
 
-    DOM.addSentenceBtn.addEventListener('click', () => {
-        const vi = DOM.newVi.value.trim();
-        const zh = DOM.newZh.value.trim();
-        const pinyin = DOM.newPinyin.value.trim();
-        
-        const data = {
-            vi, zh, pinyin,
-            meaningDetail: DOM.newMeaning.value.trim(),
-            exZh: DOM.newExZh.value.trim(),
-            exVi: DOM.newExVi.value.trim(),
-            structure: DOM.newStructure.value.trim(),
-            structVi: DOM.newStructVi.value.trim(),
-            grammar: DOM.newGrammar.value.trim(),
-            note: DOM.newNote.value.trim()
-        };
-
-        if (selectedManageGroupId && vi && zh) {
-            appData.addSentence(selectedManageGroupId, data);
-            
-            // Clear inputs
-            DOM.newVi.value = '';
-            DOM.newZh.value = '';
-            DOM.newPinyin.value = '';
-            DOM.newMeaning.value = '';
-            DOM.newExZh.value = '';
-            DOM.newExVi.value = '';
-            DOM.newStructure.value = '';
-            DOM.newStructVi.value = '';
-            DOM.newGrammar.value = '';
-            DOM.newNote.value = '';
-            
-            renderSentences();
-            // Cập nhật lại dropdown study
-            renderSetupClasses();
-        } else {
-            alert("Vui lòng nhập ít nhất Tiếng Việt và Chữ Hán.");
-        }
-    });
-
-    // Auto Fetch API
-    DOM.autoFetchBtn.addEventListener('click', async () => {
-        let zh = DOM.newZh.value.trim();
-        let vi = DOM.newVi.value.trim();
-        
-        if (!zh && !vi) {
-            alert("Vui lòng nhập Tiếng Việt hoặc Chữ Hán trước khi tra cứu!");
-            return;
-        }
-
-        if (!window.GRAMMAR_DATA || window.GRAMMAR_DATA.length < 100) {
-            alert("Dữ liệu ngữ pháp chưa được tải đầy đủ. Vui lòng nhấn Ctrl+F5 để tải lại trang!");
-            return;
-        }
-
-        const btnIcon = DOM.autoFetchBtn.innerHTML;
-        DOM.autoFetchBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-        DOM.autoFetchBtn.disabled = true;
-
-        try {
-            // Kiểm tra xem input ở Chữ Hán có thực sự là chữ Hán không (có chứa ký tự tiếng Trung)
-            const hasChinese = /[\u4e00-\u9fa5]/.test(zh);
-
-            // 1. Dịch thuật thông minh
-            if (!zh || (!hasChinese && zh.length > 0)) {
-                // Nếu không có Chữ Hán, hoặc Chữ Hán đang chứa tiếng Việt/Anh
-                const textToTranslate = zh || vi;
-                const res = await fetch(`https://lingva.ml/api/v1/vi/zh/${encodeURIComponent(textToTranslate)}`);
-                const data = await res.json();
-                if (data && data.translation) {
-                    zh = data.translation;
-                    DOM.newZh.value = zh;
-                    if (!vi && textToTranslate !== zh) {
-                        DOM.newVi.value = textToTranslate;
-                        DOM.newMeaning.value = textToTranslate;
-                    }
-                }
-            } else if (!vi) {
-                // Có chữ Hán nhưng chưa có tiếng Việt -> dịch sang tiếng Việt
-                const res = await fetch(`https://lingva.ml/api/v1/zh/vi/${encodeURIComponent(zh)}`);
-                const data = await res.json();
-                if (data && data.translation) {
-                    vi = data.translation;
-                    DOM.newVi.value = vi;
-                    DOM.newMeaning.value = vi;
-                }
-            } else if (vi && !DOM.newMeaning.value) {
-                DOM.newMeaning.value = vi;
-            }
-
-            // 2. Lấy Pinyin cho chữ Hán (nếu chưa có)
-            if (!DOM.newPinyin.value && zh) {
-                try {
-                    const pinyinRes = await fetch(`https://lingva.ml/api/v1/zh/en/${encodeURIComponent(zh)}`);
-                    const pinyinData = await pinyinRes.json();
-                    if (pinyinData && pinyinData.info && pinyinData.info.pronunciation) {
-                         DOM.newPinyin.value = pinyinData.info.pronunciation.toLowerCase();
-                    }
-                } catch(e) {}
-            }
-
-            // 3. Tìm kiếm chính xác câu từ cơ sở dữ liệu ngữ pháp (HSK 1-6)
-            let hasExactMatch = false;
-            let exactMatchData = null;
-
-            if (zh) {
-                const exactMatch = findExactSentenceMatch(zh);
-                if (exactMatch) {
-                    hasExactMatch = true;
-                    exactMatchData = exactMatch;
-                    
-                    if (!DOM.newPinyin.value) DOM.newPinyin.value = exactMatch.example.pinyin;
-                    
-                    DOM.newStructure.value = exactMatch.rule.structure;
-                    DOM.newStructVi.value = exactMatch.rule.desc;
-                    DOM.newGrammar.value = `[${exactMatch.rule.id}] ${exactMatch.rule.desc}`;
-                    DOM.newNote.value = `Tags: ${exactMatch.rule.tags}`;
-                    
-                    DOM.newExZh.value = exactMatch.example.zh;
-                    DOM.newExVi.value = exactMatch.example.pinyin + " - " + exactMatch.example.en;
-                    
-                    if (!DOM.newMeaning.value) {
-                        DOM.newMeaning.value = exactMatch.example.en;
-                    }
-                } else {
-                    const grammar = findGrammarMatch(zh);
-                    if (grammar) {
-                        DOM.newStructure.value = grammar.structure || '';
-                        DOM.newStructVi.value = grammar.desc || '';
-                        DOM.newGrammar.value = `[${grammar.id}] ${grammar.desc || ''}`;
-                        DOM.newNote.value = `Tags: ${grammar.tags || ''}`;
-                        if (grammar.examples && grammar.examples.length > 0) {
-                            const ex = grammar.examples[0];
-                            DOM.newExZh.value = ex.zh || '';
-                            DOM.newExVi.value = (ex.pinyin || '') + " - " + (ex.en || '');
-                        }
-                    } else {
-                        DOM.newNote.value = "Không tìm thấy điểm ngữ pháp tương ứng trong CSDL.";
-                    }
-                }
-            }
-            
-        } catch (error) {
-            console.error(error);
-            alert("Không thể lấy dữ liệu từ mạng lúc này. Vui lòng thử lại sau.");
-        } finally {
-            DOM.autoFetchBtn.innerHTML = btnIcon;
-            DOM.autoFetchBtn.disabled = false;
-        }
-    });
-
     // Feedback Audio
     DOM.feedbackAudioBtn.addEventListener('click', () => {
         const s = currentSession.sentences[currentSession.currentIndex];
@@ -480,22 +317,45 @@ function bindEvents() {
             for (let line of lines) {
                 let zh = line;
                 let vi = '';
-                if (line.includes('-')) {
+                let userPinyin = '';
+
+                // Regex tìm dải phân cách: các loại gạch ngang với ít nhất 1 dấu cách ở trước hoặc sau
+                // Hỗ trợ mọi loại gạch ngang (-, –, —, −, etc.)
+                const sepRegex = /(?:\s+[-–—\u2010-\u2015\u2212\uFF0D\uFE63]\s*|\s*[-–—\u2010-\u2015\u2212\uFF0D\uFE63]\s+)/g;
+                let matches = [];
+                let match;
+                while ((match = sepRegex.exec(line)) !== null) {
+                    matches.push({ index: match.index, length: match[0].length });
+                }
+
+                if (matches.length > 0) {
+                    const firstMatch = matches[0];
+                    zh = line.substring(0, firstMatch.index).trim();
+                    
+                    if (matches.length >= 2) {
+                        const lastMatch = matches[matches.length - 1];
+                        vi = line.substring(firstMatch.index + firstMatch.length, lastMatch.index).trim();
+                        userPinyin = line.substring(lastMatch.index + lastMatch.length).trim();
+                    } else {
+                        vi = line.substring(firstMatch.index + firstMatch.length).trim();
+                    }
+                } else if (line.includes('-')) {
                     const parts = line.split('-');
                     zh = parts[0].trim();
                     vi = parts.slice(1).join('-').trim();
-                } else if (line.includes(':')) {
-                    const parts = line.split(':');
-                    zh = parts[0].trim();
-                    vi = parts.slice(1).join(':').trim();
+                } else if (line.includes(':') || line.includes('：')) {
+                    const colonIndex = line.indexOf(':') !== -1 ? line.indexOf(':') : line.indexOf('：');
+                    zh = line.substring(0, colonIndex).trim();
+                    vi = line.substring(colonIndex + 1).trim();
                 }
 
                 if (!zh) continue;
 
-                let pinyin = '', structure = '', structVi = '', grammar = '', note = '', exZh = '', exVi = '';
+                let pinyin = userPinyin; // Dùng pinyin người dùng nhập nếu có
+                let structure = '', structVi = '', grammar = '', note = '', exZh = '', exVi = '';
                 const exactMatch = findExactSentenceMatch(zh);
                 if (exactMatch) {
-                    pinyin = exactMatch.example.pinyin;
+                    if (!pinyin) pinyin = exactMatch.example.pinyin; // Chỉ tự điền nếu chưa có
                     structure = exactMatch.rule.structure;
                     structVi = exactMatch.rule.desc;
                     grammar = `[${exactMatch.rule.id}] ${exactMatch.rule.desc}`;
@@ -524,124 +384,6 @@ function bindEvents() {
             batchImportText.value = '';
             renderSentences();
             renderSetupClasses();
-        });
-    }
-
-    // Quick Conversation Import
-    const quickConvBtn = document.getElementById('quick-conversation-btn');
-    const quickConvCard = document.getElementById('quick-conversation-card');
-    const processConvBtn = document.getElementById('process-conversation-btn');
-    const cancelConvBtn = document.getElementById('cancel-conversation-btn');
-    const quickConvText = document.getElementById('quick-conversation-text');
-
-    if (quickConvBtn) {
-        quickConvBtn.addEventListener('click', () => {
-            quickConvCard.classList.remove('hidden');
-        });
-        cancelConvBtn.addEventListener('click', () => {
-            quickConvCard.classList.add('hidden');
-            quickConvText.value = '';
-        });
-        processConvBtn.addEventListener('click', () => {
-            const text = quickConvText.value.trim();
-            if (!text) return;
-            
-            if (!selectedManageGroupId) {
-                alert("Vui lòng chọn nhóm học!");
-                return;
-            }
-
-            // Helper: check if a line is Chinese (Hanzi)
-            const isChineseLine = (line) => /[\u4e00-\u9fa5]/.test(line);
-            // Helper: check if a line is Pinyin (latin + tone marks, possibly in parens)
-            const isPinyinLine = (line) => {
-                const stripped = line.replace(/^\(|\)$/g, '').trim();
-                return /^[a-zA-Zāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜü\s0-9.,?!'"\u2018\u2019\u201c\u201d-]+$/.test(stripped) && stripped.length > 0;
-            };
-
-            const allLines = text.split('\n').map(l => l.trim()).filter(l => l);
-            let addedCount = 0;
-            let i = 0;
-
-            while (i < allLines.length) {
-                const line1 = allLines[i];
-
-                // Line 1 must contain Chinese characters (possibly with A: / B: prefix)
-                if (!isChineseLine(line1)) {
-                    i++;
-                    continue;
-                }
-
-                let zhLine = line1.replace(/^[A-Za-z０-９\d]+\s*[:：]\s*/, '').trim();
-                let pinyinLine = '';
-                let viLine = '';
-
-                // Look ahead for pinyin on next line
-                if (i + 1 < allLines.length && isPinyinLine(allLines[i + 1])) {
-                    pinyinLine = allLines[i + 1].replace(/^\(|\)$/g, '').trim();
-                    // Look ahead for Vietnamese on the line after pinyin
-                    if (i + 2 < allLines.length && !isChineseLine(allLines[i + 2])) {
-                        viLine = allLines[i + 2];
-                        i += 3;
-                    } else {
-                        i += 2;
-                    }
-                } else if (i + 1 < allLines.length && !isChineseLine(allLines[i + 1])) {
-                    // No pinyin line, next line is Vietnamese
-                    viLine = allLines[i + 1];
-                    i += 2;
-                } else {
-                    // Only Chinese line, no translation
-                    i += 1;
-                }
-
-                if (!zhLine) continue;
-
-                let structure = '', structVi = '', grammar = '', note = '', exZh = '', exVi = '';
-                
-                const exactMatch = findExactSentenceMatch(zhLine);
-                if (exactMatch) {
-                    if (!pinyinLine) pinyinLine = exactMatch.example.pinyin;
-                    structure = exactMatch.rule.structure;
-                    structVi = exactMatch.rule.desc;
-                    grammar = `[${exactMatch.rule.id}] ${exactMatch.rule.desc}`;
-                    note = `Tags: ${exactMatch.rule.tags}`;
-                    exZh = exactMatch.example.zh;
-                    exVi = exactMatch.example.pinyin + " - " + exactMatch.example.en;
-                    if (!viLine) viLine = exactMatch.example.en;
-                } else {
-                    const gMatch = findGrammarMatch(zhLine);
-                    if (gMatch) {
-                        structure = gMatch.structure || '';
-                        structVi = gMatch.desc || '';
-                        grammar = `[${gMatch.id}] ${gMatch.desc || ''}`;
-                        note = `Tags: ${gMatch.tags || ''}`;
-                    }
-                }
-
-                appData.addSentence(selectedManageGroupId, {
-                    zh: zhLine, 
-                    vi: viLine, 
-                    pinyin: pinyinLine, 
-                    structure, 
-                    structVi, 
-                    grammar, 
-                    note, 
-                    exZh, 
-                    exVi
-                });
-                addedCount++;
-            }
-            
-            if (addedCount === 0) {
-                alert("Không tìm thấy câu hợp lệ nào. Hãy đảm bảo dòng đầu tiên của mỗi câu có chứa chữ Hán.");
-            } else {
-                alert(`Đã thêm thành công ${addedCount} câu hội thoại!`);
-                quickConvCard.classList.add('hidden');
-                quickConvText.value = '';
-                renderSentences();
-                renderSetupClasses();
-            }
         });
     }
 
@@ -1083,8 +825,8 @@ function endSession() {
 }
 
 // ==================== MANAGE VIEW ====================
-// Track which classes are collapsed (by class id)
-const collapsedClasses = new Set();
+// Track which classes are expanded (by class id)
+const expandedClasses = new Set();
 
 function renderManageGroups() {
     const classes = appData.getClasses();
@@ -1093,7 +835,8 @@ function renderManageGroups() {
     let html = '';
     classes.forEach(c => {
         const classGroups = groups.filter(g => g.classId === c.id);
-        const isCollapsed = collapsedClasses.has(c.id);
+        // By default it is collapsed (not in expandedClasses)
+        const isCollapsed = !expandedClasses.has(c.id);
         const chevronStyle = isCollapsed ? 'transform: rotate(-90deg);' : 'transform: rotate(0deg);';
         
         html += `
@@ -1146,10 +889,10 @@ function renderManageGroups() {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
             const classId = btn.getAttribute('data-class-id');
-            if (collapsedClasses.has(classId)) {
-                collapsedClasses.delete(classId);
+            if (expandedClasses.has(classId)) {
+                expandedClasses.delete(classId);
             } else {
-                collapsedClasses.add(classId);
+                expandedClasses.add(classId);
             }
             renderManageGroups();
         });
